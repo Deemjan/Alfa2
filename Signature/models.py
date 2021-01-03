@@ -1,18 +1,21 @@
 from datetime import datetime, timedelta
 
+import django
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
 
 # Create your models here.
 
 class KeyTable(models.Model):
+    now = timezone.now()
     key_id = models.AutoField(primary_key=True)
     key_name = models.CharField(max_length=100, default='Имя ключа', verbose_name='Название подписи')
     key = models.TextField(unique=True)
-    dateOfCreation = models.DateTimeField(default=datetime.now())
+    dateOfCreation = models.DateTimeField(default=now)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    dateOfExpiration = models.DateTimeField(default=datetime.now() + timedelta(days=30),
+    dateOfExpiration = models.DateTimeField(default=now + timezone.timedelta(days=30),
                                             verbose_name='Срок действия подписи')
 
     def __str__(self):
