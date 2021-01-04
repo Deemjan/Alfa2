@@ -2,6 +2,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding, utils
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.exceptions import InvalidSignature
 
+from Signature.models import SignedDocument, KeyTable
+
 
 def generateKey():
     return rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -29,10 +31,10 @@ def generateKey():
 #         return private_key
 
 
-def loadKey(key):
-    private_key = serialization.load_pem_private_key(
-        key, password=None, backend=None)
-    return private_key
+# def loadKey(key):
+#     private_key = serialization.load_pem_private_key(
+#         key, password=None, backend=None)
+#     return private_key
 
 
 def loadPublicKey(key):
@@ -53,6 +55,30 @@ def serializePrivateKey(key):
 def serializePublicKey(key):
     return key.public_bytes(encoding=serialization.Encoding.PEM,
                             format=serialization.PublicFormat.SubjectPublicKeyInfo)
+
+
+def loadKey(key):
+    # print(key.encode('ascii'))
+    private_key = serialization.load_pem_private_key(
+        key, password=None, backend=None)
+    return private_key
+
+
+def get_private_key(pk):
+    return KeyTable.objects.get(pk=pk)
+
+
+def add_signed_doc(file_name, key_id, PATH):
+    # print(get_private_key(key_id).key)
+    key = loadKey(get_private_key(key_id).key.encode('ascii'))
+    public_key = serializePublicKey(key.public_key())
+    signature, doc_hash = signDocument(PATH, key)
+
+    signedDoc = SignedDocument.objects.create(document_title=file_name,
+                                              document_hash=doc_hash, public_key=public_key.decode('ascii'),
+                                              signature=signature)
+    signedDoc.save()
+    return True
 
 
 def signDocument(document, private_key):
@@ -95,6 +121,31 @@ def verifyDocument(document, public_key, signature):
             return True
         except InvalidSignature:
             return False
+
+
+def pull_document_from_database(doc_title):
+    try:
+        return SignedDocument.objects.get(document_title=doc_title)
+    except:
+        return False
+
+
+# def verify_doc(file_name):
+#     PATH = f'Digital_signature/files/{file_name}'
+#     doc_hash = ''
+#     with open(PATH, 'rb') as file:
+#         doc_hash = hash(file)
+#
+#     document = pull_document_from_database(doc_hash)
+#     return verifyDocument(PATH, document.public_key, document.signature)
+
+
+def isValid(PATH, doc_title):
+    try:
+        document = pull_document_from_database(doc_title)
+        return verifyDocument(PATH, document.public_key, document.signature)
+    except:
+        return False
 
 
 # def test():

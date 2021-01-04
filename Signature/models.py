@@ -24,7 +24,7 @@ class KeyTable(models.Model):
 
 class SignedDocument(models.Model):
     document_id = models.AutoField(primary_key=True)
-    document_title = models.CharField(max_length=100)
+    document_title = models.CharField(max_length=100, unique=True)
     document_hash = models.TextField()
     public_key = models.TextField()
     signature = models.BinaryField()

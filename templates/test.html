@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="post" action="/uploadHandler" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file">
+        <input type="submit" name='submit' value="Проверить">
+    </form>
+    <form method="post" action="/signDocHandler" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file">
+        <select size="1" name="keys">
+            <option value="1" selected>1</option>
+        </select>
+        <input type="submit" name='submit' value="Подписать">
+    </form>
+    <form method="post" action="/generateKey" enctype="application/json">
+        {% csrf_token %}
+        <label> Название подписи
+            <input type="text" name="Название подписи">
+        </label>
+        <label>Срок действия подписи
+            <input type="date" name="Дата" value="2021.01.04">
+        </label>
+        <input type="submit" name='submit' value="Проверить">
+    </form>
+</body>
+</html>
