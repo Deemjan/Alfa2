@@ -65,7 +65,7 @@ class SignDocumentView(APIView):
         key_id = request.POST['keys']
         print(key_id)
 
-        PATH = 'file_storage/' + filename
+        PATH = 'static/file_storage/' + filename
 
         with default_storage.open(PATH, 'wb+') as destination:
             for chunk in file_obj_data.chunks():
