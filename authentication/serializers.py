@@ -75,12 +75,7 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
-        print(self.context['request'].user)
-        print(instance)
         user = self.context['request'].user
-
-        print(user.pk)
-        print(instance.pk)
 
         if user.pk != instance.pk:
             raise serializers.ValidationError({"authorize": "You dont have permission for this user."})

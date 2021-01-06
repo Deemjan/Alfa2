@@ -19,7 +19,8 @@ class KeyTable(models.Model):
                                             verbose_name='Срок действия подписи')
 
     def __str__(self):
-        return f"Таблица Ключей - {self.key_id}, название подписи - {self.key_name}, дата окончания - {self.dateOfExpiration}"
+        return f"Таблица Ключей - {self.key_id}, название подписи - {self.key_name}, срок действия до - " \
+               f"{self.dateOfExpiration} "
 
 
 class SignedDocument(models.Model):
@@ -28,6 +29,7 @@ class SignedDocument(models.Model):
     document_hash = models.TextField()
     public_key = models.TextField()
     signature = models.BinaryField()
+    key_table_id = models.ForeignKey(KeyTable, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"Документ {self.document_title}"

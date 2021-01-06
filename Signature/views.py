@@ -5,6 +5,7 @@ from django.core.files.storage import default_storage
 from django.shortcuts import render
 
 # Create your views here.
+from rest_framework import status
 from rest_framework.parsers import FileUploadParser, MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -52,22 +53,25 @@ class VerifyDocumentView(APIView):
         filename = str(request.FILES['file'])  # received file name
         file_obj_data = request.data['file']
 
-        PATH = 'file_storage/' + filename
+        PATH = 'static/file_storage/' + filename
 
         with default_storage.open(PATH, 'wb+') as destination:
             for chunk in file_obj_data.chunks():
                 destination.write(chunk)
-            doc_hash = hash(destination)
 
-        # Generate key
         success = isValid(PATH, filename)
 
-        if os.path.exists(PATH):
-            os.remove(PATH)
+        remove_document(PATH)
 
         if success:
-            return Response(status=200)
-        return Response(status=404)
+            return Response(status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST, headers={
+            "validation error": "Document didn't pass validation."})
+
+
+def remove_document(PATH):
+    if os.path.exists(PATH):
+        os.remove(PATH)
 
 
 class SignDocumentView(APIView):
@@ -78,7 +82,6 @@ class SignDocumentView(APIView):
         filename = str(request.FILES['file'])  # received file name
         file_obj_data = request.data['file']
         key_id = request.POST['keys']
-        print(key_id)
 
         PATH = 'static/file_storage/' + filename
 
@@ -89,12 +92,11 @@ class SignDocumentView(APIView):
         # Generate key
         success = add_signed_doc(file_name=filename, key_id=key_id, PATH=PATH)
 
-        if os.path.exists(PATH):
-            os.remove(PATH)
+        remove_document(PATH)
 
         if success:
-            return Response(status=200)
-        return Response(status=404)
+            return Response(status.HTTP_200_OK)
+        return Response(status.HTTP_400_BAD_REQUEST, headers={"error": "Document already signed."})
 
 
 class GenerateKeyView(APIView):
@@ -114,6 +116,6 @@ class GenerateKeyView(APIView):
                                                dateOfExpiration=date_of_expiration)
             keyTable.save()
 
-            return Response(200)
-        except:
-            return Response(404)
+            return Response(status.HTTP_201_CREATED)
+        except Exception:
+            return Response(status.HTTP_400_BAD_REQUEST)
