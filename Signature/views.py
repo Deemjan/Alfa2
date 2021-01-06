@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view, permission_classes
-from Signature.models import KeyTable
+from Signature.models import KeyTable, SignedDocument
 from Signature.permissions import IsAuthenticatedAndKeyOwner
 from Signature.serialize import KeyTableSerializer, SignedDocumentSerializer
 
@@ -33,7 +33,7 @@ class KeyOwnerViewSet(ModelViewSet):
 
 
 class SignedDocumentViewSet(ModelViewSet):
-    queryset = KeyTable.objects.all()
+    queryset = SignedDocument.objects.all()
     serializer_class = SignedDocumentSerializer
     permission_classes = [IsAuthenticated]
 
