@@ -19,7 +19,7 @@ class KeyTable(models.Model):
                                             verbose_name='Срок действия подписи')
 
     def __str__(self):
-        return f"Таблица Ключей {self.key_id}"
+        return f"Таблица Ключей - {self.key_id}, название подписи - {self.key_name}, дата окончания - {self.dateOfExpiration}"
 
 
 class SignedDocument(models.Model):

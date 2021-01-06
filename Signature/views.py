@@ -5,13 +5,14 @@ from django.core.files.storage import default_storage
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.decorators import api_view
 from rest_framework.parsers import FileUploadParser, MultiPartParser, FormParser, JSONParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
+from rest_framework.decorators import api_view, permission_classes
 from Signature.models import KeyTable
+from Signature.permissions import IsAuthenticatedAndKeyOwner
 from Signature.serialize import KeyTableSerializer, SignedDocumentSerializer
 
 from Signature.cryptography import isValid, generateKey, serializePrivateKey, add_signed_doc
@@ -20,19 +21,32 @@ from Signature.cryptography import isValid, generateKey, serializePrivateKey, ad
 class KeyTableViewSet(ModelViewSet):
     queryset = KeyTable.objects.all()
     serializer_class = KeyTableSerializer
+    permission_classes = [IsAuthenticatedAndKeyOwner]
+
+
+class KeyOwnerViewSet(ModelViewSet):
+    serializer_class = KeyTableSerializer
+    permission_classes = [IsAuthenticatedAndKeyOwner]
+
+    def get_queryset(self):
+        return KeyTable.objects.filter(user=self.request.user)
 
 
 class SignedDocumentViewSet(ModelViewSet):
     queryset = KeyTable.objects.all()
     serializer_class = SignedDocumentSerializer
+    permission_classes = [IsAuthenticated]
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def uploadCheckView(request):
     return render(request, 'test.html')
 
 
 class VerifyDocumentView(APIView):
     parser_classes = (MultiPartParser,)
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
         filename = str(request.FILES['file'])  # received file name
@@ -58,6 +72,7 @@ class VerifyDocumentView(APIView):
 
 class SignDocumentView(APIView):
     parser_classes = (JSONParser, FormParser, MultiPartParser,)
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
         filename = str(request.FILES['file'])  # received file name
@@ -84,6 +99,7 @@ class SignDocumentView(APIView):
 
 class GenerateKeyView(APIView):
     parser_classes = (JSONParser, FormParser, MultiPartParser,)
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
 
