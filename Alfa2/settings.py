@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'Signature.apps.SignatureConfig',
+    'authentication.apps.AuthConfig',
 ]
 
 MIDDLEWARE = [
