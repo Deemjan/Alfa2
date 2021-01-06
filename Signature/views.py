@@ -41,7 +41,7 @@ class SignedDocumentViewSet(ModelViewSet):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def uploadCheckView(request):
-    return render(request, 'test.html')
+    return render(request, 'test.html', {'user': request.user})
 
 
 class VerifyDocumentView(APIView):
