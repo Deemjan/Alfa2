@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js" integrity="sha512-eGYNRo+9eOOAd/b4UZR8f2IdWNO3+6XrJMb5M1/wPvSUA7ABpSAT7uexDGt7fNfqhwVGI1L+0lEUm/n7ZqiL9A==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.js" integrity="sha512-bYkaBWaFtfPIMYt9+CX/4DWgfrjcHinjerNYxQmQx1VM76eUsPPKZa5zWV8KksVkBF/DaHSADCwil2J5Uq2ctA==" crossorigin="anonymous"></script>
+</head>
+<body>
+
+{% verbatim %}
+<div class="container" id="orders_app">
+    <div class="btn btn-success bnt-lf" v-for="order in orders">
+        Description: {{ order.key_name }}
+        <br><br>
+        Amount: {{ order.key_id }}
+    </div>
+</div>
+
+{% endverbatim %}
+<script src="/static/app.js"></script>
+
+</body>
+</html>

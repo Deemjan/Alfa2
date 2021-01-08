@@ -90,7 +90,6 @@ def add_signed_doc(file_name, key_id, PATH):
         return False
 
 
-
 def signDocument(document, private_key):
     # chosen_hash = hashes.SHA256()
     # hasher = hashes.Hash(chosen_hash)
@@ -157,7 +156,6 @@ def isValid(PATH, doc_title):
         if os.path.exists(PATH):
             os.remove(PATH)
         raise serializers.ValidationError({"validation error": "Document does not exist."})
-
 
 
 def dateIsValid(expiration_date):

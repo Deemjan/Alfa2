@@ -22,7 +22,7 @@ from Signature.cryptography import isValid, generateKey, serializePrivateKey, ad
 class KeyTableViewSet(ModelViewSet):
     queryset = KeyTable.objects.all()
     serializer_class = KeyTableSerializer
-    permission_classes = [IsAuthenticatedAndKeyOwner]
+    # permission_classes = [IsAuthenticatedAndKeyOwner]
 
 
 class KeyOwnerViewSet(ModelViewSet):
@@ -43,6 +43,10 @@ class SignedDocumentViewSet(ModelViewSet):
 @permission_classes([IsAuthenticated])
 def uploadCheckView(request):
     return render(request, 'test.html', {'user': request.user})
+
+
+def testView(request):
+    return render(request, 'test2.html')
 
 
 class VerifyDocumentView(APIView):

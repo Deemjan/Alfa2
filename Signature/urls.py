@@ -14,6 +14,7 @@ urlpatterns = [
     path('uploadHandler', views.VerifyDocumentView.as_view()),
     path('generateKey', views.GenerateKeyView.as_view()),
     path('signDocHandler', views.SignDocumentView.as_view()),
+    path('test', views.testView),
     #path('', views.openUserPage)
 ]
 
