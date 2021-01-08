@@ -144,10 +144,10 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    '*.herokuapp.com',
-    'www.test-cors.org',
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     '*.herokuapp.com',
+#     'www.test-cors.org',
+# ]
 
 # CORS_ALLOWED_ORIGINS = [
 #     "https://www.test-cors.org",
