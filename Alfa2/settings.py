@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'g+6=9)%^3!86^2x#7zldfxa_k^hp*qp&v@e%dxti4721k03t%8'
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'afternoon-brushlands-89966.herokuapp.com']
-
 
 # Application definition
 
@@ -77,7 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Alfa2.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -87,7 +84,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -107,7 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -121,7 +116,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -155,6 +149,8 @@ CSRF_TRUSTED_ORIGINS = [
     'www.test-cors.org',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "https://www.test-cors.org",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "https://www.test-cors.org",
+# ]
+
+CORS_ORIGIN_ALLOW_ALL = True
