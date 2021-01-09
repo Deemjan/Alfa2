@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>personal page</title>
+    <link rel="stylesheet" href="{% static "Signature/css/style_private.css"%}">
+    <script>
+
+        function viewDiv1(){
+            document.getElementById("div1").style.display = "block";
+            document.getElementById("div2").style.display = "none";
+            document.getElementById("div3").style.display = "none";
+        };
+
+        function viewDiv2(){
+            document.getElementById("div2").style.display = "block";
+            document.getElementById("div1").style.display = "none";
+            document.getElementById("div3").style.display = "none";
+        };
+
+        function viewDiv3(){
+            document.getElementById("div3").style.display = "block";
+            document.getElementById("div2").style.display = "none";
+            document.getElementById("div1").style.display = "none";
+        };
+
+        function myFunction() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="index">
+    <a href="first-page" class="button_main">Главная</a>
+    <div class="dropdown">
+        <button onclick="myFunction()" class="dropbtn">Личный кабинет</button>
+        <div id="myDropdown" class="dropdown-content">
+            <a href="private-page">Личный кабинет пользователя</a>
+            <a href="admin-page">Личный кабинет администратора</a>
+            <a href="dedicated-page">Страница выделенного сотрудника</a>
+        </div>
+    </div>
+</div>
+<header class="main">
+    <div class="paragraph">
+        <p>
+            {{user.first_name}} {{user.last_name}} <span class="right">Пользователь</span><br/>
+            Должность: *******<br/>
+            Отдел: *******<br/>
+            Руководитель: *******
+        </p>
+        <input type="button" value="выход" class="exit">
+    </div>
+</header>
+<div class="container">
+    <div class="signature">
+        <p>Управление подписями и документами</p>
+        <form>
+            <label>
+                <input type="button" value="Создать подпиcь" onmousedown="viewDiv1()" class="not_invisible">
+                <input type="button" value="Подписать документ" onmousedown="viewDiv2()" class="not_invisible">
+                <input type="button" value="Проверить документ" onmousedown="viewDiv3()" class="not_invisible">
+            </label>
+        </form>
+            <form id="div1">
+                <label>
+                    Название подписи<input type="text" class="knopka">
+                    Срок действия подписи<input type="text" class="knopka">
+                    <input type="button" value="создать" class="knopka">
+                </label>
+            </form>
+            <form id="div2" action="https://afternoon-brushlands-89966.herokuapp.com/uploadHandler" enctype="multipart/form-data">
+                <label>
+                    Выберете подпись
+                    <select>
+                        <option>1</option>
+                        <option></option>
+                        <option></option>
+                        <option></option>
+                    </select>
+                    <input type="file" class="knopka">
+                    <input type="button" value="Подписать документ" class="knopka">
+                </label>
+            </form>
+            <form id="div3">
+                <label>
+                    <input type="file" class="knopka">
+                    <input type="button" value="Проверить документ" class="knopka">
+                </label>
+            </form>
+    </div>
+</div>
+
+<div class="footer">
+    <p>"Alfa Signature" 2020<br/>
+        signature@alfa.com</p>
+</div>
+</body>
+</html>

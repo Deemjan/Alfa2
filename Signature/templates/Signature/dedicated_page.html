@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static "Signature/css/style_dedicated.css"%}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js" integrity="sha512-eGYNRo+9eOOAd/b4UZR8f2IdWNO3+6XrJMb5M1/wPvSUA7ABpSAT7uexDGt7fNfqhwVGI1L+0lEUm/n7ZqiL9A==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.js" integrity="sha512-bYkaBWaFtfPIMYt9+CX/4DWgfrjcHinjerNYxQmQx1VM76eUsPPKZa5zWV8KksVkBF/DaHSADCwil2J5Uq2ctA==" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div class="index">
+    <a href="first_page.html" class="button_main">Главная</a>
+    <div class="dropdown">
+        <button onclick="myFunction()" class="dropbtn">Личный кабинет</button>
+        <div id="myDropdown" class="dropdown-content">
+            <a href="private-page">Личный кабинет пользователя</a>
+            <a href="admin-page">Личный кабинет администратора</a>
+            <a href="dedicated-page">Страница выделенного сотрудника</a>
+        </div>
+    </div>
+</div>
+<header class="main">
+    <div class="paragraph">
+        <p>
+            {{user.first_name}} {{user.last_name}} <span class="right">Сотрудник</span><br/>
+            Должность: *******<br/>
+            Отдел: *******<br/>
+            Руководитель: *******
+        </p>
+        <input value="вернуться к просмотру сотрудников"  class="exit" onclick="location.href='admin-page'" type="button">
+    </div>
+</header>
+
+{{ user_keys }}
+<div class="container">
+    <div class="signature">
+        <p>Управление подписями и документами</p>
+
+        <form>
+            <label>
+                <input type="button" value="Редактировать подпиcь" onmousedown="viewDiv1()" class="not_invisible">
+            </label>
+        </form>
+
+{#        <form id="div1">#}
+{#        {% csrf_token %}#}
+{#            <div>#}
+{#                <label class="div1">#}
+{#                    Выберите подпись#}
+{#                    <select id="key_selector">#}
+{#                        {% for key in user_keys %}#}
+{#                            <option value="{{ key.id }}">{{ key.key_name }} {{ key.dateOfExpiration }}</option>#}
+{#                        {% endfor %}#}
+{#                    </select>#}
+{#                </label>#}
+{#                <label>#}
+{#                    Указать срок сдачи#}
+{#                    <input id="key_exp_date" type="date" class="knopka" value="2020-11-09">#}
+{#                </label>#}
+{#            </div>#}
+{#            <div>#}
+{#                <label>#}
+{#                    Указать срок сдачи#}
+{#                    <input type="date" class="knopka">#}
+{#                </label>#}
+{#            </div>#}
+{#            <div>#}
+{#                <label>#}
+{#                    <input type="button" value="Удалить подпись" class="delete">#}
+{#                </label>#}
+{#            </div>#}
+{#        </form>#}
+        {% verbatim %}
+        <div id="redactForm">
+            <form id="div1">
+            <div>
+                <label class="div1">
+                    Выберите подпись
+                    <select id="key_selector" v-model="selected">
+                            <option v-for="key in keys" v-bind:value="{id: key.key_id, name:key.key_name, date: key.dateOfExpiration}">{{ key.key_name }}</option>
+                    </select>
+                </label>
+                <label>
+                    Указать срок сдачи
+                    {{formatDate()}}
+                    <input v-model="date" id="key_exp_date" type="date" class="knopka">
+                </label>
+                <label>
+                    <input type="button" value="сохранить изменения" class="delete">
+                </label>
+            </div>
+        </form>
+            <div>
+                <label>
+                    <input type="button" value="Удалить подпись" class="delete">
+                </label>
+            </div>
+        </div>
+
+
+        {% endverbatim %}
+    </div>
+</div>
+
+<div class="footer">
+    <p>"Alfa Signature" 2020<br/>
+        signature@alfa.com</p>
+</div>
+<script>
+
+        function viewDiv1(){
+            document.getElementById("div1").style.display = "block";
+            document.getElementById("div2").style.display = "none";
+            document.getElementById("div3").style.display = "none";
+        }
+
+
+        function myFunction() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        document.getElementById("key_selector").onchange = function(){
+              const result = document.getElementById("key_exp_date");
+              result.value='2020-09-11'
+        };
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+<script src="{% static "Signature/js/dedicated_page.js"%}"></script>
+</body>
+</html>

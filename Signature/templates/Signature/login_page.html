@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static "Signature/css/style_login.css"%}">
+</head>
+<body>
+<form class="login-form" action="/auth" method="post">
+    <h1>Вход в кабинет</h1>
+    <input type="text" name="login" placeholder="Логин">
+    <input type="password" name="pass" placeholder="Пароль">
+    <label>
+        <input type="checkbox"> Запомните меня</label>
+    <a href="#"> Я забыл пароль</a>
+    <input type="submit" value="войти">
+    <a class="mainpage" href="first-page">Вернуться на главную страницу</a>
+</form>
+
+</body>
+</html>

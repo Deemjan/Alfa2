@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>admin</title>
+    <link rel="stylesheet" href="{% static "Signature/css/style_admin.css"%}">
+    <script>
+        function myFunction() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="index">
+    <a href="front-page" class="button_main">Главная</a>
+    <div class="dropdown">
+        <button onclick="myFunction()" class="dropbtn">Личный кабинет</button>
+        <div id="myDropdown" class="dropdown-content">
+            <a href="private-page">Личный кабинет пользователя</a>
+            <a href="admin-page">Личный кабинет администратора</a>
+            <a href="dedicated-page">Страница выделенного сотрудника</a>
+        </div>
+    </div>
+</div>
+<header class="main">
+    <div class="paragraph">
+        <p>
+            {{user.first_name}} {{user.last_name}} <span class="right">Администратор</span><br/>
+            Должность: <br/>
+            Отдел: <br/>
+            Руководитель:
+        </p>
+        <input type="button" value="выход" class="exit">
+    </div>
+</header>
+<div class="container">
+    <div class="staff" >
+        Список сотрудников
+        <div class="btn-group">
+            {% for person in users %}
+                <button onclick="location.href='dedicated-page?user={{ person.id }}'" type="button">{{person.first_name}} {{person.last_name}} #1 - Должность</button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <p>"Alfa Signature" 2020<br/>
+        signature@alfa.com</p>
+</div>
+</body>
+</html>

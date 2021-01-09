@@ -24,8 +24,8 @@ SECRET_KEY = 'g+6=9)%^3!86^2x#7zldfxa_k^hp*qp&v@e%dxti4721k03t%8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['*','localhost', '127.0.0.1', 'afternoon-brushlands-89966.herokuapp.com']
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'afternoon-brushlands-89966.herokuapp.com']
+# ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -145,13 +145,13 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF_TRUSTED_ORIGINS = [
-#     '*.herokuapp.com',
-#     'www.test-cors.org',
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    '*.herokuapp.com',
+    'www.test-cors.org',
+]
 
-# CORS_ALLOWED_ORIGINS = [
-#     "https://www.test-cors.org",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "https://www.test-cors.org",
+]
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True

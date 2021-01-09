@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <link rel="stylesheet" href="{% static "Signature/css/style_registration.css"%}">
+    </head>
+    <body>
+        <form class="login-form" action="/auth" method="post">
+            <h1>Регистрация</h1>
+            <input type="text" name="login" placeholder="Введите логин">
+            <input type="password" name="pass" placeholder="Введите пароль">
+            <input type="password" name="pass" placeholder="Введите ещё раз пароль">
+            <input type="submit" value="регистрация">
+            <a class="mainpage" href="first-page">Вернуться на главную страницу</a>
+        </form>
+    </body>
+</html>

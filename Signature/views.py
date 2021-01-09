@@ -1,5 +1,6 @@
 import os
 
+from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.shortcuts import render
@@ -14,7 +15,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view, permission_classes
 from Signature.models import KeyTable, SignedDocument
 from Signature.permissions import IsAuthenticatedAndKeyOwner
-from Signature.serialize import KeyTableSerializer, SignedDocumentSerializer
+from Signature.serialize import KeyTableSerializer, SignedDocumentSerializer, UserSerializer, KeyFieldSerializer
 
 from Signature.cryptography import isValid, generateKey, serializePrivateKey, add_signed_doc
 
@@ -39,14 +40,64 @@ class SignedDocumentViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class KeyFieldViewSet(ModelViewSet):
+    queryset = KeyTable.objects.all()
+    serializer_class = KeyFieldSerializer
+
+    def get_queryset(self):
+        return KeyTable.objects.filter(user_id=self.request.query_params['user'])
+    # permission_classes = [IsAuthenticated]
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def uploadCheckView(request):
     return render(request, 'test.html', {'user': request.user})
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def testView(request):
-    return render(request, 'test2.html')
+    queryset = {'users': User.objects.all()}
+    return render(request, 'Signature/admin.html', queryset)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def firstPageView(request):
+    return render(request, 'Signature/first_page.html')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dedicatedPageView(request):
+    # queryset = {'user_keys': KeyTable.objects.filter(user=request.user)}
+    queryset = {'user_keys': KeyTable.objects.filter(user_id=request.query_params['user'])}
+    return render(request, 'Signature/dedicated_page.html', queryset)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def loginPageView(request):
+    return render(request, 'Signature/login_page.html')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def privatePageView(request):
+    return render(request, 'Signature/private_page.html')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def registrationPageView(request):
+    return render(request, 'Signature/registration_page.html')
 
 
 class VerifyDocumentView(APIView):
