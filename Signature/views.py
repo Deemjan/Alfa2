@@ -1,11 +1,14 @@
 import os
 
+import requests
 from django.contrib.auth.models import User
+
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
+from django.views.generic import TemplateView
 from rest_framework import status
 from rest_framework.parsers import FileUploadParser, MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -13,6 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view, permission_classes
+
 from Signature.models import KeyTable, SignedDocument
 from Signature.permissions import IsAuthenticatedAndKeyOwner
 from Signature.serialize import KeyTableSerializer, SignedDocumentSerializer, UserSerializer, KeyFieldSerializer
@@ -88,10 +92,14 @@ def loginPageView(request):
     return render(request, 'Signature/login_page.html')
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def privatePageView(request):
-    return render(request, 'Signature/private_page.html')
+    queryset = {
+        'user_keys': KeyTable.objects.filter(user=request.user),
+        'create_key': ''
+    }
+    return render(request, 'Signature/private_page.html', queryset)
 
 
 @api_view(['GET'])
@@ -105,6 +113,7 @@ class VerifyDocumentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
+        queryset = {}
         filename = str(request.FILES['file'])  # received file name
         file_obj_data = request.data['file']
 
@@ -119,9 +128,12 @@ class VerifyDocumentView(APIView):
         remove_document(PATH)
 
         if success:
-            return Response(status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST, headers={
-            "validation error": "Document didn't pass validation."})
+            queryset['succ_or_err'] = 'Документ подлиный'
+            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+            return render(request, 'Signature/private_page.html', queryset)
+        queryset['succ_or_err'] = 'Документ не прошёл проверку'
+        queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+        return render(request, 'Signature/private_page.html', queryset)
 
 
 def remove_document(PATH):
@@ -134,10 +146,11 @@ class SignDocumentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
+        queryset = {}
         filename = str(request.FILES['file'])  # received file name
         file_obj_data = request.data['file']
         key_id = request.POST['keys']
-
+        print(request.data)
         PATH = 'static/file_storage/' + filename
 
         with default_storage.open(PATH, 'wb+') as destination:
@@ -150,18 +163,24 @@ class SignDocumentView(APIView):
         remove_document(PATH)
 
         if success:
-            return Response(status.HTTP_200_OK)
-        return Response(status.HTTP_400_BAD_REQUEST, headers={"error": "Document already signed."})
+            queryset['succ_or_err'] = 'Документ подписан'
+            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+            return render(request, 'Signature/private_page.html', queryset)
+        queryset['succ_or_err'] = 'Что-то пошло не так'
+        queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+        return render(request, 'Signature/private_page.html', queryset)
 
 
 class GenerateKeyView(APIView):
     parser_classes = (JSONParser, FormParser, MultiPartParser,)
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
 
         try:
+            queryset = {}
             user = request.user
+            print(user, '------------------------------------------------------------------------------------------')
             key = generateKey()
             key_name = request.data['Название подписи']
             private_key = serializePrivateKey(key)
@@ -170,7 +189,10 @@ class GenerateKeyView(APIView):
             keyTable = KeyTable.objects.create(user=user, key=private_key.decode('ascii'), key_name=key_name,
                                                dateOfExpiration=date_of_expiration)
             keyTable.save()
-
-            return Response(status.HTTP_201_CREATED)
+            queryset['succ_or_err'] = 'Ключ создан'
+            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+            return render(request, 'Signature/private_page.html', queryset) #return redirect('Signature/private_page.html') #Response(status.HTTP_200_OK)
         except Exception:
-            return Response(status.HTTP_400_BAD_REQUEST)
+            queryset['succ_or_err'] = 'Что-то пошло не так'
+            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+            return render(request, 'Signature/private_page.html', queryset)

@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.urls import path
 from rest_framework.routers import SimpleRouter
 
@@ -22,7 +23,6 @@ urlpatterns = [
     path('private-page', views.privatePageView, name='private-page'),
     path('registration-page', views.registrationPageView, name='registration-page'),
     path('first-page', views.firstPageView, name='first-page'),
-    #path('', views.openUserPage)
 ]
 
 urlpatterns += router.urls

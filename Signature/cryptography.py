@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from cryptography.hazmat.primitives.asymmetric import rsa, padding, utils
@@ -159,7 +160,7 @@ def isValid(PATH, doc_title):
 
 
 def dateIsValid(expiration_date):
-    return timezone.now() <= expiration_date
+    return datetime.datetime.now().date() <= expiration_date
 
 # def test():
 #     key = generateKey()

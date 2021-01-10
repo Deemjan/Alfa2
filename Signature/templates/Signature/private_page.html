@@ -77,6 +77,7 @@
                 <input type="button" value="Проверить документ" onmousedown="viewDiv3()" class="not_invisible">
             </label>
         </form>
+<<<<<<< HEAD
             <form id="div1">
                 <label>
                     Название подписи<input type="text" class="knopka">
@@ -110,5 +111,52 @@
     <p>"Alfa Signature" 2020<br/>
         signature@alfa.com</p>
 </div>
+=======
+            <div>
+                {% if succ_or_err != '' %}
+                    <p>{{succ_or_err}}</p>
+                {% endif %}
+            </div>
+            <form id="div1" method="post" action="/generateKey" enctype="application/json">
+                {% csrf_token %}
+                <label for="sing">Название подписи</label>
+                <input type="text" id="sing"  name="Название подписи" class="knopka">
+                <label for="date_sing">Срок действия подписи</label>
+                <input type="date" name="Дата" id="date_sing" class="knopka">
+                <input type="submit" name='submit' class="knopka" value="Создать подпись">
+            </form>
+
+
+            <form id="div2" method="post" action="/signDocHandler" enctype="multipart/form-data">
+            {% csrf_token %}
+                <select name="keys">
+                    {% if user_keys %}
+                        <option value=""  selected disabled>Выбирете ключ для подписи</option>
+                        {% for key in user_keys %}
+                            <option value="{{key.key_id}}">{{ key.key_name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                <input type="file" class="knopka" name="file">
+                <input type="submit" name='submit' class="knopka" value="Подписать документ">
+            </form>
+
+            <form id="div3" method="post" action="/uploadHandler" enctype="multipart/form-data">
+                <label for="checkfile">Проверить документ</label>
+                <input type="file" name="file" class="knopka" id="checkfile">
+                <label for="check">Проверить документ</label>
+                <input type="submit" id="check" class="knopka">
+            </form>
+
+    </div>
+</div>
+    <script src="{% static "Signature/js/private_page.js"%}"></script>
+
+    <div class="footer">
+        <p>"Alfa Signature" 2020<br/>
+            signature@alfa.com</p>
+    </div>
+
+>>>>>>> 300650f... add private page
 </body>
 </html>

@@ -11,7 +11,7 @@ from django.utils import timezone
 class KeyTable(models.Model):
     now = timezone.now()
     key_id = models.AutoField(primary_key=True)
-    key_name = models.CharField(max_length=100, default='Имя ключа', verbose_name='Название подписи')
+    key_name = models.CharField(max_length=100, default='Имя ключа', verbose_name='Название подписи', unique=True)
     key = models.TextField(unique=True)
     dateOfCreation = models.DateField(default=now)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
