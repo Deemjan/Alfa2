@@ -1,6 +1,12 @@
+import datetime
+import os
+
 from cryptography.hazmat.primitives.asymmetric import rsa, padding, utils
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.exceptions import InvalidSignature
+from django.db import IntegrityError
+from django.utils import timezone
+from rest_framework import serializers
 
 from Signature.models import SignedDocument, KeyTable
 
@@ -69,16 +75,20 @@ def get_private_key(pk):
 
 
 def add_signed_doc(file_name, key_id, PATH):
-    # print(get_private_key(key_id).key)
-    key = loadKey(get_private_key(key_id).key.encode('ascii'))
-    public_key = serializePublicKey(key.public_key())
-    signature, doc_hash = signDocument(PATH, key)
+    try:
+        # print(get_private_key(key_id).key)
+        key_table = get_private_key(key_id)
+        key = loadKey(key_table.key.encode('ascii'))
+        public_key = serializePublicKey(key.public_key())
+        signature, doc_hash = signDocument(PATH, key)
 
-    signedDoc = SignedDocument.objects.create(document_title=file_name,
-                                              document_hash=doc_hash, public_key=public_key.decode('ascii'),
-                                              signature=signature)
-    signedDoc.save()
-    return True
+        signedDoc = SignedDocument.objects.create(document_title=file_name,
+                                                  document_hash=doc_hash, public_key=public_key.decode('ascii'),
+                                                  signature=signature, key_table_id=key_table)
+        signedDoc.save()
+        return True
+    except IntegrityError:
+        return False
 
 
 def signDocument(document, private_key):
@@ -123,13 +133,6 @@ def verifyDocument(document, public_key, signature):
             return False
 
 
-def pull_document_from_database(doc_title):
-    try:
-        return SignedDocument.objects.get(document_title=doc_title)
-    except:
-        return False
-
-
 # def verify_doc(file_name):
 #     PATH = f'Digital_signature/files/{file_name}'
 #     doc_hash = ''
@@ -142,11 +145,22 @@ def pull_document_from_database(doc_title):
 
 def isValid(PATH, doc_title):
     try:
-        document = pull_document_from_database(doc_title)
-        return verifyDocument(PATH, document.public_key, document.signature)
-    except:
-        return False
+        document = SignedDocument.objects.get(document_title=doc_title)
 
+        if not dateIsValid(document.key_table_id.dateOfExpiration):
+            if os.path.exists(PATH):
+                os.remove(PATH)
+            raise serializers.ValidationError({"validation error": "Signature has expired."})
+
+        return verifyDocument(PATH, document.public_key, document.signature)
+    except SignedDocument.DoesNotExist:
+        if os.path.exists(PATH):
+            os.remove(PATH)
+        raise serializers.ValidationError({"validation error": "Document does not exist."})
+
+
+def dateIsValid(expiration_date):
+    return datetime.datetime.now().date() <= expiration_date
 
 # def test():
 #     key = generateKey()
