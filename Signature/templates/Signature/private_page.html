@@ -64,7 +64,7 @@
             Отдел: *******<br/>
             Руководитель: *******
         </p>
-        <input type="button" value="выход" class="exit">
+        <a class="exit" href="auth/logout/">Выход</a>
     </div>
 </header>
 <div class="container">
@@ -77,41 +77,6 @@
                 <input type="button" value="Проверить документ" onmousedown="viewDiv3()" class="not_invisible">
             </label>
         </form>
-<<<<<<< HEAD
-            <form id="div1">
-                <label>
-                    Название подписи<input type="text" class="knopka">
-                    Срок действия подписи<input type="text" class="knopka">
-                    <input type="button" value="создать" class="knopka">
-                </label>
-            </form>
-            <form id="div2" action="https://afternoon-brushlands-89966.herokuapp.com/uploadHandler" enctype="multipart/form-data">
-                <label>
-                    Выберете подпись
-                    <select>
-                        <option>1</option>
-                        <option></option>
-                        <option></option>
-                        <option></option>
-                    </select>
-                    <input type="file" class="knopka">
-                    <input type="button" value="Подписать документ" class="knopka">
-                </label>
-            </form>
-            <form id="div3">
-                <label>
-                    <input type="file" class="knopka">
-                    <input type="button" value="Проверить документ" class="knopka">
-                </label>
-            </form>
-    </div>
-</div>
-
-<div class="footer">
-    <p>"Alfa Signature" 2020<br/>
-        signature@alfa.com</p>
-</div>
-=======
             <div>
                 {% if succ_or_err != '' %}
                     <p>{{succ_or_err}}</p>
@@ -156,7 +121,5 @@
         <p>"Alfa Signature" 2020<br/>
             signature@alfa.com</p>
     </div>
-
->>>>>>> 300650f... add private page
 </body>
 </html>

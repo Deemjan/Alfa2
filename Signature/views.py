@@ -73,7 +73,7 @@ def testView(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def firstPageView(request):
     return render(request, 'Signature/first_page.html')
 
@@ -87,7 +87,7 @@ def dedicatedPageView(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def loginPageView(request):
     return render(request, 'Signature/login_page.html')
 
@@ -103,7 +103,7 @@ def privatePageView(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def registrationPageView(request):
     return render(request, 'Signature/registration_page.html')
 
