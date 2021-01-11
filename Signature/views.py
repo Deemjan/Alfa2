@@ -37,6 +37,7 @@ class KeyTableViewSet(ModelViewSet):
 
 class KeyOwnerViewSet(ModelViewSet):
     serializer_class = KeyTableSerializer
+
     # permission_classes = [IsAuthenticatedAndKeyOwner]
 
     @login_required(login_url='login-page')
@@ -132,6 +133,7 @@ class VerifyDocumentView(APIView):
     def post(self, request, format=None):
         try:
             queryset = {}
+            print(request.data)
             filename = str(request.FILES['file'])  # received file name
             file_obj_data = request.data['file']
 
@@ -146,7 +148,7 @@ class VerifyDocumentView(APIView):
             remove_document(PATH)
 
             if success:
-                queryset['succ_or_err'] = 'Документ подлиный'
+                queryset['succ_or_err'] = 'Документ подлинный'
                 queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
                 return render(request, 'Signature/private_page.html', queryset)
             queryset['succ_or_err'] = 'Документ не прошёл проверку'
@@ -170,6 +172,7 @@ class SignDocumentView(APIView):
     def post(self, request, format=None):
         try:
             queryset = {}
+            print(request.data)
             filename = str(request.FILES['file'])  # received file name
             file_obj_data = request.data['file']
             key_id = request.POST['keys']

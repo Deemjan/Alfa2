@@ -109,5 +109,6 @@ def isValid(PATH, doc_title):
 
 
 def dateIsValid(expiration_date):
-    date = parse_date(expiration_date)
-    return datetime.datetime.now().date() <= date
+    if type(str) == type(expiration_date):
+        expiration_date = parse_date(expiration_date)
+    return datetime.datetime.now().date() <= expiration_date
