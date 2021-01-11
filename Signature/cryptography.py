@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.exceptions import InvalidSignature
 from django.db import IntegrityError
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from rest_framework import serializers
 
 from Signature.models import SignedDocument, KeyTable
@@ -108,4 +109,5 @@ def isValid(PATH, doc_title):
 
 
 def dateIsValid(expiration_date):
-    return datetime.datetime.now().date() <= expiration_date
+    date = parse_date(expiration_date)
+    return datetime.datetime.now().date() <= date

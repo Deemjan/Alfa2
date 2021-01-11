@@ -203,7 +203,6 @@ class GenerateKeyView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-
         try:
             queryset = {}
             user = request.user
