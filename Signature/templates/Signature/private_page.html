@@ -1,12 +1,13 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>personal page</title>
-    <link rel="stylesheet" href="{% static "Signature/css/style_private.css"%}">
-    <script>
 
+    {% block title %}
+        <title>personal page</title>
+    {% endblock %}
+
+    <link rel="stylesheet" href="{% static "Signature/css/style_private.css" %}">
+    <link rel="stylesheet" href="{% static "base.css" %}">
+    <script>
         function viewDiv1(){
             document.getElementById("div1").style.display = "block";
             document.getElementById("div2").style.display = "none";
@@ -43,30 +44,7 @@
             }
         }
     </script>
-</head>
-<body>
-<div class="index">
-    <a href="first-page" class="button_main">Главная</a>
-    <div class="dropdown">
-        <button onclick="myFunction()" class="dropbtn">Личный кабинет</button>
-        <div id="myDropdown" class="dropdown-content">
-            <a href="private-page">Личный кабинет пользователя</a>
-            <a href="admin-page">Личный кабинет администратора</a>
-            <a href="dedicated-page">Страница выделенного сотрудника</a>
-        </div>
-    </div>
-</div>
-<header class="main">
-    <div class="paragraph">
-        <p>
-            {{user.first_name}} {{user.last_name}} <span class="right">Пользователь</span><br/>
-            Должность: *******<br/>
-            Отдел: *******<br/>
-            Руководитель: *******
-        </p>
-        <a class="exit" href="auth/logout/">Выход</a>
-    </div>
-</header>
+{% block content %}
 <div class="container">
     <div class="signature">
         <p>Управление подписями и документами</p>
@@ -107,19 +85,16 @@
             </form>
 
             <form id="div3" method="post" action="/uploadHandler" enctype="multipart/form-data">
+                {% csrf_token %}
                 <label for="checkfile">Проверить документ</label>
                 <input type="file" name="file" class="knopka" id="checkfile">
                 <label for="check">Проверить документ</label>
                 <input type="submit" id="check" class="knopka">
             </form>
 
+        </div>
     </div>
 </div>
     <script src="{% static "Signature/js/private_page.js"%}"></script>
 
-    <div class="footer">
-        <p>"Alfa Signature" 2020<br/>
-            signature@alfa.com</p>
-    </div>
-</body>
-</html>
+{% endblock %}

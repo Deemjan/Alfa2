@@ -1,10 +1,39 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    {% block title %}
+    {% endblock %}
+    {% block link %}
+    {% endblock %}
+    <link rel="stylesheet" href="{% static "base.css"%}">
+    <link rel="stylesheet" href="{% static "Signature/css/style_private.css" %}">
 </head>
 <body>
-$END$
+
+<header class="main">
+    <div class="paragraph">
+        <p>
+            {{user.first_name}} {{user.last_name}} <span class="right">Пользователь</span><br/>
+            Должность: *******<br/>
+            Отдел: *******<br/>
+            Руководитель: *******
+        </p>
+        {% if user.is_staff %}
+            <a class="admin_page" href="{% url 'admin-page' %}">Панель администратора</a>
+        {% endif %}
+        <a class="exit" href="{% url 'logout-page' %}">Выход</a>
+    </div>
+</header>
+
+    {% block content %}
+    {% endblock %}
+    <script src="{% static "Signature/js/private_page.js"%}"></script>
+
+    <div class="footer">
+        <p>"Alfa Signature" 2020<br/>
+            signature@alfa.com</p>
+    </div>
 </body>
 </html>

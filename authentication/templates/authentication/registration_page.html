@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="{% static "authentication/css/style_registration.css"%}">
     </head>
     <body>
-        <form class="login-form" action="/auth/register/" method="post" enctype="application/json">
+        <form class="login-form" action='' method="post">
             {% csrf_token %}
             <h1>Регистрация</h1>
             {{form.username}}
@@ -23,7 +23,24 @@
 <!--            <input type="password" name="password" placeholder="Введите пароль">-->
 <!--            <input type="password" name="password2" placeholder="Введите ещё раз пароль">-->
             <input type="submit" value="регистрация">
-            <a class="mainpage" href="first-page">Вернуться на главную страницу</a>
+            <a class="mainpage" href="{% url 'first-page' %}">Вернуться на главную страницу</a>
         </form>
+        {{form.errors}}
+
+    <script>
+
+		var form_fields = document.getElementsByTagName('input')
+		form_fields[1].placeholder='Введите логин..';
+		form_fields[2].placeholder='Введите email..';
+		form_fields[3].placeholder='Введите имя..';
+		form_fields[4].placeholder='Введите фамилию...';
+		form_fields[5].placeholder='Ваш пароль...';
+		form_fields[6].placeholder='Повторите ваш пароль...';
+
+
+		for (var field in form_fields){
+			form_fields[field].className += ' form-control'
+		}
+	</script>
     </body>
 </html>

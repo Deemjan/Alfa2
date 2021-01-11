@@ -8,13 +8,40 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.js" integrity="sha512-bYkaBWaFtfPIMYt9+CX/4DWgfrjcHinjerNYxQmQx1VM76eUsPPKZa5zWV8KksVkBF/DaHSADCwil2J5Uq2ctA==" crossorigin="anonymous"></script>
 </head>
 <body>
-<form class="login-form" id="login_form"  >
-    {% csrf_token %}
-    <h1>Вход в кабинет</h1>
-    <input type="text" name="username" placeholder="Логин">
-    <input type="password" name="password" placeholder="Пароль">
-    <input type="submit" value="войти">
-    <a class="mainpage" href="first-page">Вернуться на главную страницу</a>
-</form>
+    <form class="login-form" id="login_form" method="POST">
+        {% csrf_token %}
+        <h1>Вход в кабинет</h1>
+        <input type="text" name="username" placeholder="Логин">
+        <input type="password" name="password" placeholder="Пароль">
+        <input type="submit" value="войти">
+        <a class="mainpage" href="{% url 'first-page' %}">Вернуться на главную страницу</a>
+        {% for msg in messages %}
+            <p id="message">{{ msg }}</p>
+        {% endfor %}
+    </form>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

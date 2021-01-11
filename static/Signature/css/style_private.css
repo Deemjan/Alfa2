@@ -33,17 +33,6 @@ html,body{
     right: 20px;
     font-family: "Trebuchet MS", serif;
 }
-
-.exit{
-    position: absolute;
-    right:0px;
-    bottom: 20px;
-    padding: 5px 55px;
-    background-color: black;
-    color:white;
-    border-radius: 10px;
-}
-
 .container{
     position: relative;
     height: 600px;
@@ -150,10 +139,10 @@ input{
 }
 
 .button_main{
-    display: inline-block;
+    display: none;
     margin-right: 150px;
     color: white;
-    background-color: brown;
+    background-color: none;
     text-decoration: none;
     padding:10px 130px;
     font-size: 16px;

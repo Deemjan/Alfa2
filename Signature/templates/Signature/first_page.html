@@ -26,17 +26,6 @@
     </script>
 </head>
 <body>
-    <div class="index">
-        <a href="first-page" class="button_main">Главная</a>
-        <div class="dropdown">
-            <button onclick="myFunction()" class="dropbtn">Личный кабинет</button>
-            <div id="myDropdown" class="dropdown-content">
-                <a href="private-page">Личный кабинет пользователя</a>
-                <a href="admin-page">Личный кабинет администратора</a>
-                <a href="dedicated-page">Страница выделенного сотрудника</a>
-            </div>
-        </div>
-    </div>
     <header class="main">
         <div class="logo">
             <img src="{% static  "Signature/image/alpha.png" %}" width="300" height="300" alt="Alpha-logo">
@@ -57,8 +46,8 @@
                 Если вы тут впервые
             </div>
         </div>
-        <a href="login-page" class="button_first">АВТОРИЗАЦИЯ</a>
-        <a href="registration-page" class="button_second">РЕГИСТРАЦИЯ</a>
+        <a href="{% url 'login-page' %}" class="button_first">АВТОРИЗАЦИЯ</a>
+        <a href="{% url 'registration-page' %}" class="button_second">РЕГИСТРАЦИЯ</a>
     </div>
     <div class="footer">
         <p>"Alfa Signature" 2020<br/>
