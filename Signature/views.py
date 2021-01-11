@@ -206,7 +206,6 @@ class GenerateKeyView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        try:
             queryset = {}
             user = request.user
             key = generateKey()
@@ -225,7 +224,7 @@ class GenerateKeyView(APIView):
                 queryset['succ_or_err'] = 'Некорректная дата'
                 queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
                 return render(request, 'Signature/private_page.html', queryset)
-        except Exception:
-            queryset['succ_or_err'] = 'Что-то пошло не так'
-            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
-            return render(request, 'Signature/private_page.html', queryset)
+        # except Exception:
+        #     queryset['succ_or_err'] = 'Что-то пошло не так'
+        #     queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+        #     return render(request, 'Signature/private_page.html', queryset)
