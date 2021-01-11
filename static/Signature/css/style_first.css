@@ -9,39 +9,136 @@ html,body{
     position: relative;
     color:white;
     text-align:center;
-
+    margin:auto;
 }
 
 .logo{
-    position:absolute;
-    bottom: 40%;
-    right:40%;
+    margin:auto;
 }
 
 .heading{
-    margin-bottom: 0px;
     font-size:70px;
     font-weight: bold;
-    position:absolute;
-    bottom:30%;
-    right:35%;
+    margin:auto;
     font-family: "Trebuchet MS", serif;
 }
 
 .paragraph{
     font-size:30px;
-    position: relative;
-    bottom: 0px;
-    padding-top: 500px;
-    padding-left: 25%;
-    width:55%;
+    margin: 90px auto auto;
+    width: 850px;
+    display: block;
+}
 
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .container{
     position: relative;
     height:600px;
 }
+
+.clear{
+    display: flex;
+    flex-wrap:wrap;
+    position: relative;
+}
+
+.authorization{
+    min-height: 250px;
+    margin-top:150px;
+    flex: 1 200px;
+}
+
+.authorization p{
+    font-size: 25px;
+    right: 55%;
+    display: block;
+    width: 450px;
+    color: black;
+    position: absolute;
+    text-align:center;
+}
+
+.registration p{
+    font-size: 25px;
+    left: 54%;
+    display: block;
+    width: 450px;
+    color: black;
+    position: absolute;
+    text-align:center;
+}
+
+.registration{
+    min-height: 250px;
+    margin-top:150px;
+    flex: 1 200px;
+}
+
+
+.button_first{
+    position: absolute;
+    background-color:white;
+    color: gray;
+    border:solid;
+    height:50px;
+    text-decoration: none;
+    padding: 35px 55px;
+    border-radius: 10px;
+    font-size:40px;
+    font-weight: bold;
+    right:55%;
+    bottom:5%;
+    transition-duration: 0.4s;
+}
+
+.button_first:hover{
+    background-color: gray;
+    color: white;
+}
+
+.button_second:hover{
+    background-color: white;
+    color: brown;
+    border-color: brown;
+}
+
+.button_second{
+    position: absolute;
+    background-color: brown;
+    color:white;
+    border:solid;
+    height:50px;
+    text-decoration: none;
+    padding: 35px 55px;
+    left:55%;
+    border-radius: 10px;
+    font-size:40px;
+    font-weight: bold;
+    bottom: 5%;
+    transition-duration: 0.4s;
+}
+
+
 .instruction{
     font-size: 25px;
     text-align:center;
@@ -61,37 +158,6 @@ html,body{
     width:150px;
 }
 
-.button_first{
-    position: absolute;
-    display: inline-block;
-    background-color:white;
-    color: gray;
-    top:200px;
-    border:solid;
-    height:50px;
-    text-decoration: none;
-    padding: 35px 55px;
-    left:20%;
-    border-radius: 10px;
-    font-size:40px;
-    font-weight: bold;
-}
-
-.button_second{
-    position: absolute;
-    display: inline-block;
-    background-color: brown;
-    color:white;
-    top:200px;
-    border:solid;
-    height:50px;
-    text-decoration: none;
-    padding: 35px 55px;
-    left:60%;
-    border-radius: 10px;
-    font-size:40px;
-    font-weight: bold;
-}
 .footer{
     position:relative;
     height:100px;

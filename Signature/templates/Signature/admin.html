@@ -9,7 +9,6 @@
     {% endblock %}
 
     {% block link %}
-    <link rel="stylesheet" href="{% static "base.css"%}">
     <link rel="stylesheet" href="{% static "Signature/css/style_admin.css"%}">
 
     <script>
@@ -36,8 +35,9 @@
 <body>
 {% block content %}
     <div class="container">
+    <h1>Список сотрудников</h1>
         <div class="staff" >
-            Список сотрудников
+
             <div class="btn-group">
                 {% for person in users %}
                     <button onclick="location.href='dedicated-page?user={{ person.id }}'" type="button">{{person.first_name}} {{person.last_name}}</button>

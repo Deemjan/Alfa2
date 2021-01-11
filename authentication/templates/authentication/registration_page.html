@@ -16,12 +16,6 @@
             {{form.last_name}}
             {{form.password1}}
             {{form.password2}}
-<!--            <input type="text" name="username" placeholder="Введите логин">-->
-<!--            <input type="email" name="email" placeholder="Введите email">-->
-<!--            <input type="text" name="first_name" placeholder="Введите Имя">-->
-<!--            <input type="text" name="last_name" placeholder="Введите Фамилию">-->
-<!--            <input type="password" name="password" placeholder="Введите пароль">-->
-<!--            <input type="password" name="password2" placeholder="Введите ещё раз пароль">-->
             <input type="submit" value="регистрация">
             <a class="mainpage" href="{% url 'first-page' %}">Вернуться на главную страницу</a>
         </form>
@@ -29,7 +23,7 @@
 
     <script>
 
-		var form_fields = document.getElementsByTagName('input')
+		var form_fields = document.getElementsByTagName('input');
 		form_fields[1].placeholder='Введите логин..';
 		form_fields[2].placeholder='Введите email..';
 		form_fields[3].placeholder='Введите имя..';

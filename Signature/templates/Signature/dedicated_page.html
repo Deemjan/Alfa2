@@ -29,51 +29,21 @@
 
 <div class="container">
     <div class="signature">
-        <p>Управление подписями и документами</p>
-        <div>
-            <label>
-                <input type="button" value="Редактировать подпиcь" onmousedown="viewDiv1()" class="not_invisible">
-            </label>
-        </div>
-        
-        <form id="div1" method="post">
+        <h1>Управление подписями и документами</h1>
+        <form class='createSignForm' method="post">
         {% csrf_token %}
-            <div>
-                <label class="div1">
-                    Выберите подпись
-                    <select name="sel">
-                            <option value="" selected disabled>Выберите подпись</option>
-                            {% for key in user_keys %}
-                                <option value="{{key.key_id}}">{{ key.key_name }}</option>
-                            {% endfor %}
-                    </select>
-                </label>
-            </div>
-            <div>
-                <label>
-                    Указать срок сдачи
-                    <input type="date" name="date" class="knopka">
-                </label>
-            </div>
-            <div>
-                <label>
-                    <input type="submit" value="Сохранить изменения" class="delete openWindowBtn">
-                </label>
-            </div>
+            <select name="sel">
+                    <option value="" selected disabled>Выберите подпись</option>
+                    {% for key in user_keys %}
+                        <option value="{{key.key_id}}">{{ key.key_name }}</option>
+                    {% endfor %}
+            </select>
+            <label for="sign_date">Указать срок сдачи</label>
+            <input id='sign_date' type="date" name="date">
+            <input type="submit" value="Сохранить изменения" class="delete openWindowBtn">
         </form>
     </div>
 </div>
-
-<!--    {% if succ_or_err != '' %}-->
-<!--        <div class="main overlay">-->
-<!--            <div class="modal">-->
-<!--                <h1>Modal window</h1>-->
-<!--                {{ succ_or_err }}-->
-<!--                <button class="closeWindowBtn">X</button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    {% endif %}-->
-
 <div class="footer">
     <p>"Alfa Signature" 2020<br/>
         signature@alfa.com</p>

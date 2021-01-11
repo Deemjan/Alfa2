@@ -8,29 +8,31 @@
     {% block link %}
     {% endblock %}
     <link rel="stylesheet" href="{% static "base.css"%}">
-    <link rel="stylesheet" href="{% static "Signature/css/style_private.css" %}">
+
 </head>
 <body>
 
 <header class="main">
     <div class="paragraph">
         <p>
-            {{user.first_name}} {{user.last_name}} <span class="right">Пользователь</span><br/>
+            {{user.first_name}} {{user.last_name}}
+            <span class="right">
+            {% if user.is_staff %}Администратор{% else %}Пользователь{% endif %}
+            </span><br/>
             Должность: *******<br/>
             Отдел: *******<br/>
             Руководитель: *******
         </p>
+        <a class="user_page" href="{% url 'private-page' %}">Личный кабинет</a>
         {% if user.is_staff %}
             <a class="admin_page" href="{% url 'admin-page' %}">Панель администратора</a>
         {% endif %}
         <a class="exit" href="{% url 'logout-page' %}">Выход</a>
     </div>
 </header>
-
     {% block content %}
     {% endblock %}
     <script src="{% static "Signature/js/private_page.js"%}"></script>
-
     <div class="footer">
         <p>"Alfa Signature" 2020<br/>
             signature@alfa.com</p>

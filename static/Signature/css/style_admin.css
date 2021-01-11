@@ -1,11 +1,16 @@
 html,body{
     margin:0;
     padding:0;
+    font-family: "Trebuchet MS", serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 
 .container{
     position: relative;
+    flex-grow: 1;
 }
 
 .signature{
@@ -27,28 +32,53 @@ html,body{
 .staff{
     position: relative;
     width:700px;
-    margin:80px 20px 40px 30%;
-    border:2px solid black;
+    margin: auto auto 20px;
     text-align:center;
-    background-color: gray;
+    background-color: #6D7986;
     color:white;
     font-size:23px;
     border-radius:10px;
 }
+
 .btn-group{
-    padding-left:140px;
+    min-height: 540px;
+    overflow-y: scroll;
+}
+
+.container h1{
+    text-align: center;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .btn-group button {
     text-align: center;
-    font-size:18px;
-    background-color: gray; /* Green background */
-    border: 1px solid gray; /* Green border */
+    font-size:25px;
+    background-color: #6D7986; /* Green background */
+    border: 1px solid black; /* Green border */
     color: white; /* White text */
     padding: 30px; /* Some padding */
-
     cursor: pointer; /* Pointer/hand icon */
-    width: 75%; /* Set a width if needed */
+    width: 100%; /* Set a width if needed */
     display: block; /* Make the buttons appear below each other */
 
 }
@@ -59,16 +89,7 @@ html,body{
 
 /* Add a background color on hover */
 .btn-group button:hover {
-    background-color: #3e8e41;
-}
-
-.footer{
-    position:relative;
-    height:100px;
-    background-color:#03061b;
-    color:white;
-    text-align: center;
-    padding-top: 20px;
+    background-color: #828E9B;
 }
 
 .index{

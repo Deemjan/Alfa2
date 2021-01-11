@@ -5,25 +5,7 @@
     <meta charset="UTF-8">
     <title>Main</title>
     <link rel="stylesheet" href="{% static "Signature/css/style_first.css"%}">
-    <script>
-        function myFunction() {
-            document.getElementById("myDropdown").classList.toggle("show");
-        }
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.dropbtn')) {
-
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                var i;
-                for (i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="{% static "Signature/css/base.css"%}">
 </head>
 <body>
     <header class="main">
@@ -34,20 +16,31 @@
             Alfa Signature
         </div>
         <div class ="paragraph">
-            Веб-система «Alfa Signature» предназначена для создания возможности и оптимизации удалённой работы с документами
+            Веб-система «Alfa Signature» предназначена для создания, возможности и оптимизации удалённой работы с документами
         </div>
     </header>
     <div class="container">
-        <div class="instruction">
-            <div class="instruction_first">
-                Если вы уже зарегистрированный пользователь
+        <div class="clear">
+            <div class="authorization">
+                <p>Если вы уже зарегистрированный пользователь</p>
+                <a href="{% url 'login-page' %}" class="button_first">АВТОРИЗАЦИЯ</a>
             </div>
-            <div class="instruction_second">
-                Если вы тут впервые
+            <div class="registration">
+                <p>Если вы тут впервые</p>
+                <a href="{% url 'registration-page' %}" class="button_second">РЕГИСТРАЦИЯ</a>
             </div>
         </div>
-        <a href="{% url 'login-page' %}" class="button_first">АВТОРИЗАЦИЯ</a>
-        <a href="{% url 'registration-page' %}" class="button_second">РЕГИСТРАЦИЯ</a>
+
+{#        <div class="instruction">#}
+{#            <div class="instruction_first">#}
+{#                Если вы уже зарегистрированный пользователь#}
+{#            </div>#}
+{#            <div class="instruction_second">#}
+{#                Если вы тут впервые#}
+{#            </div>#}
+{#        </div>#}
+{#        <a href="{% url 'login-page' %}" class="button_first">АВТОРИЗАЦИЯ</a>#}
+{#        <a href="{% url 'registration-page' %}" class="button_second">РЕГИСТРАЦИЯ</a>#}
     </div>
     <div class="footer">
         <p>"Alfa Signature" 2020<br/>

@@ -1,12 +1,31 @@
 
 .main{
     background-color:#03061b;
-    height:250px;
+    height:200px;
     position: relative;
     color:white;
     text-align:center;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
 .paragraph{
     position:absolute;
@@ -40,7 +59,7 @@ input{
     position: absolute;
 
     right:5px;
-    bottom: 50px;
+    bottom: 35px;
     width: 200px;
     height: 25px;
     text-align: center;
@@ -51,12 +70,27 @@ input{
     text-decoration: none;
     color:white;
     border-radius: 10px;
-
 }
+
+.user_page{
+    position: absolute;
+    right:5px;
+    bottom: 70px;
+    width: 200px;
+    height: 25px;
+    text-align: center;
+    line-height: 25px;
+    padding: 2px;
+    background-color: black;
+    text-decoration: none;
+    color:white;
+    border-radius: 10px;
+}
+
 .exit{
     position: absolute;
     right:5px;
-    bottom: 10px;
+    bottom: 5px;
     width: 200px;
     height: 25px;
     text-align: center;
@@ -65,4 +99,14 @@ input{
     text-decoration: none;
     color:white;
     border-radius: 10px;
+}
+
+.footer{
+    position:relative;
+    height:100px;
+    background-color:#03061b;
+    color:white;
+    text-align: center;
+    padding-top: 20px;
+    flex-shrink: 0;
 }

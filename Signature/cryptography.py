@@ -15,34 +15,6 @@ def generateKey():
     return rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
 
-# def saveKey(fileName, private_key):
-#     with open(rf'keys\\{fileName}.pem', 'wb') as key_file:
-#         key_file.write(serializePrivateKey(private_key))
-#
-#
-# def saveSignature(fileName, signature):
-#     with open(rf'signatures\\{fileName}.txt', 'wb') as key_file:
-#         key_file.write(signature)
-#
-#
-# def loadSignature(fileName):
-#     with open(rf'signatures\\{fileName}.txt', "rb") as key_file:
-#         return key_file.read()
-
-
-# def loadKey(fileName):
-#     with open(rf'keys\\{fileName}.pem', "rb") as key_file:
-#         private_key = serialization.load_pem_private_key(
-#             key_file.read(), password=None, backend=None)
-#         return private_key
-
-
-# def loadKey(key):
-#     private_key = serialization.load_pem_private_key(
-#         key, password=None, backend=None)
-#     return private_key
-
-
 def loadPublicKey(key):
     public_key = serialization.load_pem_public_key(key, backend=None)
     return public_key
@@ -64,7 +36,6 @@ def serializePublicKey(key):
 
 
 def loadKey(key):
-    # print(key.encode('ascii'))
     private_key = serialization.load_pem_private_key(
         key, password=None, backend=None)
     return private_key
@@ -76,7 +47,6 @@ def get_private_key(pk):
 
 def add_signed_doc(file_name, key_id, PATH):
     try:
-        # print(get_private_key(key_id).key)
         key_table = get_private_key(key_id)
         key = loadKey(key_table.key.encode('ascii'))
         public_key = serializePublicKey(key.public_key())
@@ -92,18 +62,6 @@ def add_signed_doc(file_name, key_id, PATH):
 
 
 def signDocument(document, private_key):
-    # chosen_hash = hashes.SHA256()
-    # hasher = hashes.Hash(chosen_hash)
-    # hasher.update(b"data & ")
-    # hasher.update(b"more data")
-    # digest = hasher.finalize()
-    # sig = private_key.sign(
-    #     digest,
-    #     padding.PSS(
-    #         mgf=padding.MGF1(hashes.SHA256()),
-    #         salt_length=padding.PSS.MAX_LENGTH),
-    #     utils.Prehashed(chosen_hash))
-
     with open(document, 'rb') as file:
         message = file.read()
         signature = private_key.sign(
@@ -133,16 +91,6 @@ def verifyDocument(document, public_key, signature):
             return False
 
 
-# def verify_doc(file_name):
-#     PATH = f'Digital_signature/files/{file_name}'
-#     doc_hash = ''
-#     with open(PATH, 'rb') as file:
-#         doc_hash = hash(file)
-#
-#     document = pull_document_from_database(doc_hash)
-#     return verifyDocument(PATH, document.public_key, document.signature)
-
-
 def isValid(PATH, doc_title):
     try:
         document = SignedDocument.objects.get(document_title=doc_title)
@@ -161,10 +109,3 @@ def isValid(PATH, doc_title):
 
 def dateIsValid(expiration_date):
     return datetime.datetime.now().date() <= expiration_date
-
-# def test():
-#     key = generateKey()
-#     PATH = r'C:\Users\orda1\PycharmProjects\aua\a.docx'
-#     signature = signDocument(PATH, key)
-#     saveKey('key', key)
-#     saveSignature('signature', signature)
