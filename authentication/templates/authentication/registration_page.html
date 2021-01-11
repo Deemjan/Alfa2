@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <link rel="stylesheet" href="{% static "authentication/css/style_registration.css"%}">
+    </head>
+    <body>
+        <form class="login-form" action="/auth/register/" method="post" enctype="application/json">
+            {% csrf_token %}
+            <h1>Регистрация</h1>
+            {{form.username}}
+            {{form.email}}
+            {{form.first_name}}
+            {{form.last_name}}
+            {{form.password1}}
+            {{form.password2}}
+<!--            <input type="text" name="username" placeholder="Введите логин">-->
+<!--            <input type="email" name="email" placeholder="Введите email">-->
+<!--            <input type="text" name="first_name" placeholder="Введите Имя">-->
+<!--            <input type="text" name="last_name" placeholder="Введите Фамилию">-->
+<!--            <input type="password" name="password" placeholder="Введите пароль">-->
+<!--            <input type="password" name="password2" placeholder="Введите ещё раз пароль">-->
+            <input type="submit" value="регистрация">
+            <a class="mainpage" href="first-page">Вернуться на главную страницу</a>
+        </form>
+    </body>
+</html>
