@@ -1,6 +1,7 @@
 import datetime
 import os
 
+from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa, padding, utils
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.exceptions import InvalidSignature
@@ -77,6 +78,7 @@ def signDocument(document, private_key):
 
 def verifyDocument(document, public_key, signature):
     public_key = serialization.load_pem_public_key(public_key.encode('ascii'), backend=None)
+    # public_key = serialization.load_pem_public_key(public_key.encode('ascii'), backend=default_backend())
     with open(document, 'rb') as file:
         try:
             message = file.read()

@@ -76,38 +76,6 @@
                 {% endif %}
             </div>
 
-            <form id="div1" method="post" action="/generateKey" enctype="application/json">
-                {% csrf_token %}
-                <label for="sing">Название подписи</label>
-                <input type="text" id="sing"  name="Название подписи" class="knopka">
-                <label for="date_sing">Срок действия подписи</label>
-                <input type="date" name="Дата" id="date_sing" class="knopka">
-                <input type="submit" name='submit' class="knopka" value="Создать подпись">
-            </form>
-
-
-            <form id="div2" method="post" action="/signDocHandler" enctype="multipart/form-data">
-            {% csrf_token %}
-                <select name="keys">
-                    {% if user_keys %}
-                        <option value=""  selected disabled>Выбирете ключ для подписи</option>
-                        {% for key in user_keys %}
-                            <option value="{{key.key_id}}">{{ key.key_name }}</option>
-                        {% endfor %}
-                    {% endif %}
-                </select>
-                <input type="file" class="knopka" name="file">
-                <input type="submit" name='submit' class="knopka" value="Подписать документ">
-            </form>
-
-            <form id="div3" method="post" action="/uploadHandler" enctype="multipart/form-data">
-                {% csrf_token %}
-                <label for="checkfile">Проверить документ</label>
-                <input type="file" name="file" class="knopka" id="checkfile">
-                <label for="check">Проверить документ</label>
-                <input type="submit" id="check" class="knopka">
-            </form>
-
         </div>
     </div>
 {% endblock %}

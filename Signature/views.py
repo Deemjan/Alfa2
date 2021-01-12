@@ -1,3 +1,4 @@
+import mimetypes
 from datetime import datetime
 import json
 import os
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
@@ -137,7 +139,7 @@ class VerifyDocumentView(APIView):
     def post(self, request, format=None):
         try:
             queryset = {}
-            print(request.data)
+            # remove_document()
             filename = str(request.FILES['file'])  # received file name
             file_obj_data = request.data['file']
 
@@ -149,8 +151,6 @@ class VerifyDocumentView(APIView):
 
             success = isValid(PATH, filename)
 
-            remove_document(PATH)
-
             if success:
                 queryset['succ_or_err'] = 'Документ подлинный'
                 queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
@@ -158,15 +158,22 @@ class VerifyDocumentView(APIView):
             queryset['succ_or_err'] = 'Документ не прошёл проверку'
             queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
+        except SignedDocument.DoesNotExist:
+            queryset = {'succ_or_err': 'Документ не был подписан',
+                        'user_keys': KeyTable.objects.filter(user=request.user)}
+            return render(request, 'Signature/private_page.html', queryset)
         except Exception:
             queryset = {'succ_or_err': 'Документ не загружен',
                         'user_keys': KeyTable.objects.filter(user=request.user)}
             return render(request, 'Signature/private_page.html', queryset)
 
 
-def remove_document(PATH):
-    if os.path.exists(PATH):
-        os.remove(PATH)
+def remove_document():
+    files = os.listdir('static/file_storage')
+    files.remove('.keep')
+    for file in files:
+        if os.path.exists(file):
+            os.remove(file)
 
 
 class SignDocumentView(APIView):
@@ -175,14 +182,12 @@ class SignDocumentView(APIView):
 
     def post(self, request, format=None):
         try:
+            # remove_document()
             queryset = {}
-            print(request.data)
             filename = str(request.FILES['file'])  # received file name
             file_obj_data = request.data['file']
             key_id = request.POST['keys']
-            print(request.data)
             PATH = 'static/file_storage/' + filename
-
             with default_storage.open(PATH, 'wb+') as destination:
                 for chunk in file_obj_data.chunks():
                     destination.write(chunk)
@@ -190,12 +195,13 @@ class SignDocumentView(APIView):
             # Generate key
             success = add_signed_doc(file_name=filename, key_id=key_id, PATH=PATH)
 
-            remove_document(PATH)
-
             if success:
                 queryset['succ_or_err'] = 'Документ подписан'
                 queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+                # return download(request, PATH, filename)
+                # remove_document(PATH)
                 return render(request, 'Signature/private_page.html', queryset)
+
             queryset['succ_or_err'] = 'Что-то пошло не так'
             queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
@@ -203,6 +209,13 @@ class SignDocumentView(APIView):
             queryset = {'succ_or_err': 'Документ не загружен',
                         'user_keys': KeyTable.objects.filter(user=request.user)}
             return render(request, 'Signature/private_page.html', queryset)
+
+
+def download(request, PATH, filename):
+    with open(PATH, 'rb') as fh:
+        response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+        response['Content-Disposition'] = 'inline; filename=' + filename
+        return response
 
 
 class GenerateKeyView(APIView):
