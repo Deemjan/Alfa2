@@ -41,7 +41,7 @@ html,body{
 }
 
 .btn-group{
-    min-height: 540px;
+    height: 540px;
     overflow-y: scroll;
 }
 
