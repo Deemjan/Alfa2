@@ -15,7 +15,7 @@
 <header class="main">
     <div class="paragraph">
         <p>
-            {{user.first_name}} {{user.last_name}} <span class="right">Пользователь</span><br/>
+            {{user.first_name}} {{user.last_name}} <span class="right">{% if user.is_staff %}Администратор{% else %}Пользователь{% endif %}</span><br/>
             Должность: *******<br/>
             Отдел: *******<br/>
             Руководитель: *******

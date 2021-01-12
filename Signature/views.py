@@ -87,19 +87,23 @@ def firstPageView(request):
 # @permission_classes([IsAuthenticated])
 # @login_required(login_url='login-page')
 def dedicatedPageView(request):
-    queryset = {}
-    if request.method == 'POST':
-        print(request.data)
-        n = int(request.POST.get('sel'))
-        date = parse_date(request.POST.get('date'))
-        key = KeyTable.objects.get(key_id=n)
-        key.dateOfExpiration = date
-        key.save()
-        queryset['succ_or_err'] = 'Изменения сохранены'
+    try:
+        queryset = {}
+        if request.method == 'POST':
+            print(request.data)
+            n = int(request.POST.get('sel'))
+            date = parse_date(request.POST.get('date'))
+            key = KeyTable.objects.get(key_id=n)
+            key.dateOfExpiration = date
+            key.save()
+            queryset['succ_or_err'] = 'Изменения сохранены'
 
-    queryset['user_keys'] = KeyTable.objects.filter(user_id=request.query_params['user'])
+        queryset['user_keys'] = KeyTable.objects.filter(user_id=request.query_params['user'])
 
-    return render(request, 'Signature/dedicated_page.html', queryset)
+        return render(request, 'Signature/dedicated_page.html', queryset)
+    except Exception:
+        queryset = {'user_keys': KeyTable.objects.filter(user_id=request.query_params['user'])}
+        return render(request, 'Signature/dedicated_page.html', queryset)
 
 
 # @api_view(['GET'])
@@ -206,6 +210,7 @@ class GenerateKeyView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
+        try:
             queryset = {}
             user = request.user
             key = generateKey()
@@ -224,7 +229,7 @@ class GenerateKeyView(APIView):
                 queryset['succ_or_err'] = 'Некорректная дата'
                 queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
                 return render(request, 'Signature/private_page.html', queryset)
-        # except Exception:
-        #     queryset['succ_or_err'] = 'Что-то пошло не так'
-        #     queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
-        #     return render(request, 'Signature/private_page.html', queryset)
+        except Exception:
+            queryset['succ_or_err'] = 'Что-то пошло не так'
+            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+            return render(request, 'Signature/private_page.html', queryset)
