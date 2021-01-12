@@ -16,7 +16,7 @@ class KeyTable(models.Model):
     dateOfCreation = models.DateField(default=now)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     dateOfExpiration = models.DateField(default=now + timezone.timedelta(days=30),
-                                            verbose_name='Срок действия подписи')
+                                        verbose_name='Срок действия подписи')
 
     def __str__(self):
         return f"Таблица Ключей - {self.key_id}, название подписи - {self.key_name}, срок действия до - " \
