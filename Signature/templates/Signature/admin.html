@@ -37,7 +37,6 @@
     <div class="container">
     <h1>Список сотрудников</h1>
         <div class="staff" >
-
             <div class="btn-group">
                 {% for person in users %}
                     <button onclick="location.href='dedicated-page?user={{ person.id }}'" type="button">{{person.first_name}} {{person.last_name}}</button>

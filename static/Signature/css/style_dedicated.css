@@ -207,3 +207,51 @@ input{
     top:20px;
     right:20px;
 }
+
+.tableWrapper{
+    overflow-y: scroll;
+    max-height: 300px;
+    width: 610px;
+    margin: 30px auto;
+}
+
+.logTable th{
+    position: sticky;
+    background-color: brown;
+    color: white;
+    top:0;
+}
+
+.logTable{
+    border: 2px solid black;
+    border-collapse: collapse;
+    border-radius: 5px;
+    width: 600px;
+}
+
+.logTable th, .logTable td{
+    border: 1px solid black;
+    padding:5px;
+
+}
+
+.logTable tr:nth-child(2n){
+    background-color: #0B1F35;
+    color: 	white;
+}
+
+.logTable tr:nth-child(2n):hover{
+    background-color: #6D7986;
+}
+
+.logTable tr:nth-child(2n-1){
+    background-color: #F3F4F5;
+    color: #0B1F35;
+}
+
+.logTable tr:nth-child(2n-1):hover{
+    background-color: #cecece;
+}
+
+
+

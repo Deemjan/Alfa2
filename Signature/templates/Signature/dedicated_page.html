@@ -43,6 +43,22 @@
             <input type="submit" value="Сохранить изменения" class="delete openWindowBtn">
         </form>
     </div>
+    <div class="tableWrapper">
+        <table class="logTable">
+            <tr>
+                <th>Название</th>
+                <th>Кем подписан</th>
+                <th>Когда подписан</th>
+            </tr>
+        {% for doc in docs %}
+            <tr>
+                <td> {{doc.document_title}}</td>
+                <td>{{doc.key_table_id.user.first_name}} </td>
+                <td>{{doc.date_of_creation}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
 </div>
 <div class="footer">
     <p>"Alfa Signature" 2020<br/>

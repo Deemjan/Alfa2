@@ -68,6 +68,16 @@ class KeyFieldViewSet(ModelViewSet):
         return KeyTable.objects.filter(user_id=self.request.query_params['user'])
 
 
+def get_signed_docs_by_user(request, user=None):
+    user = user if user is not None else request.user
+    try:
+        key_table = KeyTable.objects.get(user=user)
+        signed_docs = SignedDocument.objects.filter(key_table_id=key_table)
+        return signed_docs
+    except KeyTable.DoesNotExist:
+        return KeyTable.objects.none()
+
+
 @login_required(login_url='login-page')
 def uploadCheckView(request):
     return render(request, 'test.html', {'user': request.user})
@@ -89,7 +99,7 @@ def firstPageView(request):
 # @permission_classes([IsAuthenticated])
 # @login_required(login_url='login-page')
 def dedicatedPageView(request):
-    try:
+    # try:
         queryset = {}
         if request.method == 'POST':
             print(request.data)
@@ -101,11 +111,12 @@ def dedicatedPageView(request):
             queryset['succ_or_err'] = 'Изменения сохранены'
 
         queryset['user_keys'] = KeyTable.objects.filter(user_id=request.query_params['user'])
+        queryset['docs'] = get_signed_docs_by_user(request, user=request.query_params['user'])
 
         return render(request, 'Signature/dedicated_page.html', queryset)
-    except Exception:
-        queryset = {'user_keys': KeyTable.objects.filter(user_id=request.query_params['user'])}
-        return render(request, 'Signature/dedicated_page.html', queryset)
+    # except Exception:
+    #     queryset = {'user_keys': KeyTable.objects.filter(user_id=request.query_params['user'])}
+    #     return render(request, 'Signature/dedicated_page.html', queryset)
 
 
 # @api_view(['GET'])
@@ -119,9 +130,11 @@ def dedicatedPageView(request):
 # @permission_classes([IsAuthenticated])
 @login_required(login_url='login-page')
 def privatePageView(request):
+    docs = get_signed_docs_by_user(request)
     queryset = {
         'user_keys': KeyTable.objects.filter(user=request.user),
         'create_key': '',
+        'docs': docs,
     }
     return render(request, 'Signature/private_page.html', queryset)
 
@@ -137,7 +150,7 @@ class VerifyDocumentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        try:
+        # try:
             queryset = {}
             # remove_document()
             filename = str(request.FILES['file'])  # received file name
@@ -158,14 +171,14 @@ class VerifyDocumentView(APIView):
             queryset['succ_or_err'] = 'Документ не прошёл проверку'
             queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
-        except SignedDocument.DoesNotExist:
-            queryset = {'succ_or_err': 'Документ не был подписан',
-                        'user_keys': KeyTable.objects.filter(user=request.user)}
-            return render(request, 'Signature/private_page.html', queryset)
-        except Exception:
-            queryset = {'succ_or_err': 'Документ не загружен',
-                        'user_keys': KeyTable.objects.filter(user=request.user)}
-            return render(request, 'Signature/private_page.html', queryset)
+        # except SignedDocument.DoesNotExist:
+        #     queryset = {'succ_or_err': 'Документ не был подписан',
+        #                 'user_keys': KeyTable.objects.filter(user=request.user)}
+        #     return render(request, 'Signature/private_page.html', queryset)
+        # except Exception:
+        #     queryset = {'succ_or_err': 'Документ не загружен',
+        #                 'user_keys': KeyTable.objects.filter(user=request.user)}
+        #     return render(request, 'Signature/private_page.html', queryset)
 
 
 def remove_document():
@@ -181,7 +194,7 @@ class SignDocumentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        try:
+        # try:
             # remove_document()
             queryset = {}
             filename = str(request.FILES['file'])  # received file name
@@ -205,10 +218,10 @@ class SignDocumentView(APIView):
             queryset['succ_or_err'] = 'Что-то пошло не так'
             queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
-        except Exception:
-            queryset = {'succ_or_err': 'Документ не загружен',
-                        'user_keys': KeyTable.objects.filter(user=request.user)}
-            return render(request, 'Signature/private_page.html', queryset)
+        # except Exception:
+        #     queryset = {'succ_or_err': 'Документ не загружен',
+        #                 'user_keys': KeyTable.objects.filter(user=request.user)}
+        #     return render(request, 'Signature/private_page.html', queryset)
 
 
 def download(request, PATH, filename):

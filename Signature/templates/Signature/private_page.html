@@ -11,6 +11,26 @@
 
 {% block content %}
 <div class="container">
+
+<table>
+    <tr>
+        <th>Название</th>
+        <th>Кем подписан</th>
+        <th>Когда подписан</th>
+    </tr>
+{% for doc in docs %}
+    <tr>
+        <td> {{doc.document_title}}</td>
+        <td>{{doc.key_table_id.user.first_name}} </td>
+        <td>{{doc.date_of_creation}}</td>
+    </tr>
+{% endfor %}
+</table>
+
+{#{% for doc in docs %}#}
+{#    <p> {{doc.document_title}} {{doc.key_table_id.user.first_name}} {{doc.date_of_creation}}</p>#}
+{#{% endfor %}#}
+
     <div class="signature">
         <div class="content_signature">
             <p>Управление подписями и документами</p>
@@ -43,9 +63,7 @@
                             </select>
                             <label for="upload" class="file_upload">Выберите файл</label>
                             <input id="upload" name='file' type="file"/>
-{#                            <input type="file" name="file" class="file_upload">#}
                                 <input type="submit" name='submit' value="Подписать документ">
-
                         </form>
                     </div>
                 </div>
@@ -62,14 +80,6 @@
                 </div>
             </div>
         </div>
-{#        <p>Управление подписями и документами</p>#}
-{#        <div>#}
-{#            <label>#}
-{#                <input type="button" value="Создать подпиcь" onmousedown="viewDiv1()" class="not_invisible">#}
-{#                <input type="button" value="Подписать документ" onmousedown="viewDiv2()" class="not_invisible">#}
-{#                <input type="button" value="Проверить документ" onmousedown="viewDiv3()" class="not_invisible">#}
-{#            </label>#}
-{#        </div>#}
             <div>
                 {% if succ_or_err != '' %}
                     <p>{{succ_or_err}}</p>
