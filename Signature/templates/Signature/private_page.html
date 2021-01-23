@@ -62,17 +62,9 @@
                 </div>
             </div>
         </div>
-{#        <p>Управление подписями и документами</p>#}
-{#        <div>#}
-{#            <label>#}
-{#                <input type="button" value="Создать подпиcь" onmousedown="viewDiv1()" class="not_invisible">#}
-{#                <input type="button" value="Подписать документ" onmousedown="viewDiv2()" class="not_invisible">#}
-{#                <input type="button" value="Проверить документ" onmousedown="viewDiv3()" class="not_invisible">#}
-{#            </label>#}
-{#        </div>#}
             <div>
                 {% if succ_or_err != '' %}
-                    <p>{{succ_or_err}}</p>
+                    <p>{{succ_or_err}} - Документ был подписан: {{info.last_name}} {{info.first_name}}</p>
                 {% endif %}
             </div>
         </div>
