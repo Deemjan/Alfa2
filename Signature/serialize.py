@@ -12,7 +12,7 @@ class KeyTableSerializer(ModelSerializer):
 class SignedDocumentSerializer(ModelSerializer):
     class Meta:
         model = SignedDocument
-        fields = '__all__'
+        fields = ["document_title", "key_table_id", "date_of_creation", "date_for_logs"]
 
 
 class UserSerializer(ModelSerializer):

@@ -1,35 +1,14 @@
-from django.http import HttpResponse
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from django.contrib.auth import authenticate, login, logout
-
-from django.contrib import messages
-
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from rest_framework import generics
-from rest_framework.authentication import BaseAuthentication
-from rest_framework.permissions import IsAuthenticated
-
+from Signature.cryptography import generateKey, serializePrivateKey
+from Signature.models import KeyTable
 from authentication.forms import CreateUserForm
-from .serializers import RegisterSerializer, ChangePasswordSerializer, UpdateUserSerializer
 
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.response import Response
-from rest_framework import status
 
-from rest_framework import status, exceptions
-from django.http import HttpResponse
-from rest_framework.authentication import get_authorization_header, BaseAuthentication
-import jwt
-import json
 # Create your views here.
-
-
-from .serializers import MyTokenObtainPairSerializer
-from rest_framework.permissions import AllowAny
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 def register_page(request):
@@ -42,12 +21,21 @@ def register_page(request):
         if form.is_valid():
             form.save()
             user = form.cleaned_data.get('username')
-            print('regestr_page:', user, form.cleaned_data.get('password'))
+            generate_user_signature(user)
             messages.success(request, 'Успешная регистрация' + user)
             return redirect('private-page')
 
     context = {'form': form}
     return render(request, 'authentication/registration_page.html', context)
+
+
+def generate_user_signature(username):
+    key = generateKey()
+    user = User.objects.get(username=username)
+    key_name = f"Подпись {user.first_name} {user.last_name}"
+    private_key = serializePrivateKey(key)
+    keyTable = KeyTable.objects.create(user=user, key=private_key.decode('ascii'), key_name=key_name)
+    keyTable.save()
 
 
 def login_page(request):
@@ -73,8 +61,6 @@ def login_page(request):
 def logout_page(request):
     logout(request)
     return redirect('first-page')
-
-
 
 # Use with rest_framework
 # class MyObtainTokenPairView(TokenObtainPairView):

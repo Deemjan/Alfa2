@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{% static "base.css"%}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js" integrity="sha512-eGYNRo+9eOOAd/b4UZR8f2IdWNO3+6XrJMb5M1/wPvSUA7ABpSAT7uexDGt7fNfqhwVGI1L+0lEUm/n7ZqiL9A==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.js" integrity="sha512-bYkaBWaFtfPIMYt9+CX/4DWgfrjcHinjerNYxQmQx1VM76eUsPPKZa5zWV8KksVkBF/DaHSADCwil2J5Uq2ctA==" crossorigin="anonymous"></script>
-
 </head>
 <body>
 
@@ -20,6 +19,7 @@
             Отдел: *******<br/>
             Руководитель: *******
         </p>
+        <a class="user_page" href="{% url 'private-page' %}">Личный кабинет</a>
         {% if user.is_staff %}
             <a class="admin_page" href="{% url 'admin-page' %}">Панель администратора</a>
         {% endif %}
@@ -38,10 +38,26 @@
                         <option value="{{key.key_id}}">{{ key.key_name }}</option>
                     {% endfor %}
             </select>
-            <label for="sign_date">Указать срок сдачи</label>
+            <label for="sign_date">Изменить срок действия подписи</label>
             <input id='sign_date' type="date" name="date">
             <input type="submit" value="Сохранить изменения" class="delete openWindowBtn">
         </form>
+    </div>
+    <div class="tableWrapper">
+        <table class="logTable">
+            <tr>
+                <th>Название</th>
+                <th>Кем подписан</th>
+                <th>Когда подписан</th>
+            </tr>
+        {% for doc in docs %}
+            <tr>
+                <td> {{doc.document_title}}</td>
+                <td>{{doc.key_table_id.user.first_name}} {{doc.key_table_id.user.last_name}}</td>
+                <td>{{doc.date_of_creation}}</td>
+            </tr>
+        {% endfor %}
+        </table>
     </div>
 </div>
 <div class="footer">
