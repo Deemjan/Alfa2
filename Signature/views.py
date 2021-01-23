@@ -1,3 +1,4 @@
+import mimetypes
 from datetime import datetime
 import json
 import os
@@ -9,9 +10,11 @@ from django.contrib.auth.models import User
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
+from django.urls import reverse
 from django.utils.dateparse import parse_date
 from django.views.generic import TemplateView
 from rest_framework import status
@@ -66,6 +69,16 @@ class KeyFieldViewSet(ModelViewSet):
         return KeyTable.objects.filter(user_id=self.request.query_params['user'])
 
 
+def get_signed_docs_by_user(request, user=None):
+    user = user if user is not None else request.user
+    try:
+        key_table = KeyTable.objects.get(user=user)
+        signed_docs = SignedDocument.objects.filter(key_table_id=key_table)
+        return signed_docs
+    except KeyTable.DoesNotExist:
+        return KeyTable.objects.none()
+
+
 @login_required(login_url='login-page')
 def uploadCheckView(request):
     return render(request, 'test.html', {'user': request.user})
@@ -87,7 +100,7 @@ def firstPageView(request):
 # @permission_classes([IsAuthenticated])
 # @login_required(login_url='login-page')
 def dedicatedPageView(request):
-    try:
+    # try:
         queryset = {}
         if request.method == 'POST':
             print(request.data)
@@ -99,11 +112,12 @@ def dedicatedPageView(request):
             queryset['succ_or_err'] = 'Изменения сохранены'
 
         queryset['user_keys'] = KeyTable.objects.filter(user_id=request.query_params['user'])
+        queryset['docs'] = get_signed_docs_by_user(request, user=request.query_params['user'])
 
         return render(request, 'Signature/dedicated_page.html', queryset)
-    except Exception:
-        queryset = {'user_keys': KeyTable.objects.filter(user_id=request.query_params['user'])}
-        return render(request, 'Signature/dedicated_page.html', queryset)
+    # except Exception:
+    #     queryset = {'user_keys': KeyTable.objects.filter(user_id=request.query_params['user'])}
+    #     return render(request, 'Signature/dedicated_page.html', queryset)
 
 
 # @api_view(['GET'])
@@ -117,10 +131,9 @@ def dedicatedPageView(request):
 # @permission_classes([IsAuthenticated])
 @login_required(login_url='login-page')
 def privatePageView(request):
-    queryset = {
-        'user_keys': KeyTable.objects.filter(user=request.user),
-        'create_key': '',
-    }
+    docs = get_signed_docs_by_user(request)
+    queryset = {'user_keys': KeyTable.objects.filter(user=request.user), 'create_key': '', 'docs': docs,
+                'succ_or_err': ''}
     return render(request, 'Signature/private_page.html', queryset)
 
 
@@ -135,9 +148,10 @@ class VerifyDocumentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        try:
+        # try:
             queryset = {}
-            print(request.data)
+            docs = get_signed_docs_by_user(request)
+            # remove_document()
             filename = str(request.FILES['file'])  # received file name
             file_obj_data = request.data['file']
 
@@ -147,26 +161,36 @@ class VerifyDocumentView(APIView):
                 for chunk in file_obj_data.chunks():
                     destination.write(chunk)
 
-            success = isValid(PATH, filename)
+            success, info_user = isValid(PATH, filename)
 
-            remove_document(PATH)
-
+            queryset['docs'] = docs
+            queryset['succ_or_err'] = ''
             if success:
+
                 queryset['succ_or_err'] = 'Документ подлинный'
                 queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+                queryset['info'] = info_user
                 return render(request, 'Signature/private_page.html', queryset)
             queryset['succ_or_err'] = 'Документ не прошёл проверку'
+            queryset['info'] = info_user
             queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
-        except Exception:
-            queryset = {'succ_or_err': 'Документ не загружен',
-                        'user_keys': KeyTable.objects.filter(user=request.user)}
-            return render(request, 'Signature/private_page.html', queryset)
+        # except SignedDocument.DoesNotExist:
+        #     queryset = {'succ_or_err': 'Документ не был подписан',
+        #                 'user_keys': KeyTable.objects.filter(user=request.user)}
+        #     return render(request, 'Signature/private_page.html', queryset)
+        # except Exception:
+        #     queryset = {'succ_or_err': 'Документ не загружен',
+        #                 'user_keys': KeyTable.objects.filter(user=request.user)}
+        #     return render(request, 'Signature/private_page.html', queryset)
 
 
-def remove_document(PATH):
-    if os.path.exists(PATH):
-        os.remove(PATH)
+def remove_document():
+    files = os.listdir('static/file_storage')
+    files.remove('.keep')
+    for file in files:
+        if os.path.exists(file):
+            os.remove(file)
 
 
 class SignDocumentView(APIView):
@@ -174,15 +198,13 @@ class SignDocumentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        try:
+        # try:
+            # remove_document()
             queryset = {}
-            print(request.data)
             filename = str(request.FILES['file'])  # received file name
             file_obj_data = request.data['file']
             key_id = request.POST['keys']
-            print(request.data)
             PATH = 'static/file_storage/' + filename
-
             with default_storage.open(PATH, 'wb+') as destination:
                 for chunk in file_obj_data.chunks():
                     destination.write(chunk)
@@ -190,19 +212,27 @@ class SignDocumentView(APIView):
             # Generate key
             success = add_signed_doc(file_name=filename, key_id=key_id, PATH=PATH)
 
-            remove_document(PATH)
-
             if success:
                 queryset['succ_or_err'] = 'Документ подписан'
                 queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+                # return download(request, PATH, filename)
+                # remove_document(PATH)
                 return render(request, 'Signature/private_page.html', queryset)
+
             queryset['succ_or_err'] = 'Что-то пошло не так'
             queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
-        except Exception:
-            queryset = {'succ_or_err': 'Документ не загружен',
-                        'user_keys': KeyTable.objects.filter(user=request.user)}
-            return render(request, 'Signature/private_page.html', queryset)
+        # except Exception:
+        #     queryset = {'succ_or_err': 'Документ не загружен',
+        #                 'user_keys': KeyTable.objects.filter(user=request.user)}
+        #     return render(request, 'Signature/private_page.html', queryset)
+
+
+def download(request, PATH, filename):
+    with open(PATH, 'rb') as fh:
+        response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+        response['Content-Disposition'] = 'inline; filename=' + filename
+        return response
 
 
 class GenerateKeyView(APIView):
