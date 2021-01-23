@@ -103,7 +103,7 @@ def isValid(PATH, doc_title):
                 os.remove(PATH)
             raise serializers.ValidationError({"validation error": "Signature has expired."})
 
-        return verifyDocument(PATH, document.public_key, document.signature)
+        return [verifyDocument(PATH, document.public_key, document.signature), document.key_table_id.user]
     except SignedDocument.DoesNotExist:
         if os.path.exists(PATH):
             os.remove(PATH)
