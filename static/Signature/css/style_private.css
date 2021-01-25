@@ -358,3 +358,8 @@ html,body{
 .logTable tr:nth-child(2n-1):hover{
     background-color: #cecece;
 }
+
+.error_info {
+    margin: auto auto 10px;
+    text-align: center;
+}

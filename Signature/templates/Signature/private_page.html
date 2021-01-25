@@ -64,7 +64,11 @@
         </div>
             <div>
                 {% if succ_or_err != '' %}
-                    <p>{{succ_or_err}} - Документ был подписан: {{info.last_name}} {{info.first_name}}</p>
+                    <p class="error_info">{{succ_or_err}}
+                        {% if info is not None %}
+                        <br>{{info.last_name}} {{info.first_name}} подписал этот документ.
+                        {% endif %}
+                    </p>
                 {% endif %}
             </div>
         </div>

@@ -8,6 +8,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.utils.dateparse import parse_date
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -137,10 +138,12 @@ class VerifyDocumentView(APIView):
     def post(self, request, format=None):
         try:
             queryset = {}
+
             docs = get_signed_docs_by_user(request)
             # remove_document()
             filename = str(request.FILES['file'])  # received file name
             file_obj_data = request.data['file']
+            print(file_obj_data)
 
             PATH = 'static/file_storage/' + filename
 
@@ -149,7 +152,7 @@ class VerifyDocumentView(APIView):
                     destination.write(chunk)
 
             success, info_user = isValid(PATH, filename)
-
+            queryset['info'] = info_user
             queryset['docs'] = docs
             queryset['succ_or_err'] = ''
             if success:
@@ -160,20 +163,20 @@ class VerifyDocumentView(APIView):
                     os.remove(PATH)
                 return render(request, 'Signature/private_page.html', queryset)
             queryset['succ_or_err'] = 'Документ не прошёл проверку'
-            queryset['info'] = info_user
+
             queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
-        except SignedDocument.DoesNotExist:
+        except ValidationError:
             if os.path.exists(PATH):
                 os.remove(PATH)
             queryset = {'succ_or_err': 'Документ не был подписан',
-                        'user_keys': KeyTable.objects.filter(user=request.user)}
+                        'user_keys': KeyTable.objects.filter(user=request.user),
+                        'docs': get_signed_docs_by_user(request)}
             return render(request, 'Signature/private_page.html', queryset)
-        except Exception:
-            if os.path.exists(PATH):
-                os.remove(PATH)
+        except Exception as e:
             queryset = {'succ_or_err': 'Документ не загружен',
-                        'user_keys': KeyTable.objects.filter(user=request.user)}
+                        'user_keys': KeyTable.objects.filter(user=request.user),
+                        'docs': get_signed_docs_by_user(request)}
             return render(request, 'Signature/private_page.html', queryset)
 
 
@@ -226,7 +229,8 @@ class SignDocumentView(APIView):
             return render(request, 'Signature/private_page.html', queryset)
         except Exception:
             queryset = {'succ_or_err': 'Документ не загружен',
-                        'user_keys': KeyTable.objects.filter(user=request.user)}
+                        'user_keys': KeyTable.objects.filter(user=request.user),
+                        'docs': get_signed_docs_by_user(request)}
             return render(request, 'Signature/private_page.html', queryset)
 
 
