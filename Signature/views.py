@@ -135,7 +135,7 @@ class VerifyDocumentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
-        # try:
+        try:
             queryset = {}
             docs = get_signed_docs_by_user(request)
             # remove_document()
@@ -163,18 +163,18 @@ class VerifyDocumentView(APIView):
             queryset['info'] = info_user
             queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
-        # except SignedDocument.DoesNotExist:
-        #     if os.path.exists(PATH):
-        #         os.remove(PATH)
-        #     queryset = {'succ_or_err': 'Документ не был подписан',
-        #                 'user_keys': KeyTable.objects.filter(user=request.user)}
-        #     return render(request, 'Signature/private_page.html', queryset)
-        # except Exception:
-        #     if os.path.exists(PATH):
-        #         os.remove(PATH)
-        #     queryset = {'succ_or_err': 'Документ не загружен',
-        #                 'user_keys': KeyTable.objects.filter(user=request.user)}
-        #     return render(request, 'Signature/private_page.html', queryset)
+        except SignedDocument.DoesNotExist:
+            if os.path.exists(PATH):
+                os.remove(PATH)
+            queryset = {'succ_or_err': 'Документ не был подписан',
+                        'user_keys': KeyTable.objects.filter(user=request.user)}
+            return render(request, 'Signature/private_page.html', queryset)
+        except Exception:
+            if os.path.exists(PATH):
+                os.remove(PATH)
+            queryset = {'succ_or_err': 'Документ не загружен',
+                        'user_keys': KeyTable.objects.filter(user=request.user)}
+            return render(request, 'Signature/private_page.html', queryset)
 
 
 def remove_document():

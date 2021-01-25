@@ -54,8 +54,8 @@
                     <div>
                         <form class='createSignForm' method="post" action="/uploadHandler" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <label for="verify_upload" class="file_upload">Выберите файл</label>
                             <input id="verify_upload" name='file' type="file"/>
+                            <label for="verify_upload" class="file_upload">Выберите файл</label>
                             <input style="padding-left:71px" type="submit" id="check">
                         </form>
                     </div>
