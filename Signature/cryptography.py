@@ -50,6 +50,8 @@ def get_private_key(pk):
 def add_signed_doc(file_name, key_id, PATH):
     try:
         key_table = get_private_key(key_id)
+        if not dateIsValid(key_table.dateOfExpiration):
+            return False
         key = loadKey(key_table.key.encode('ascii'))
         public_key = serializePublicKey(key.public_key())
         signature, doc_hash = signDocument(PATH, key)

@@ -200,7 +200,6 @@ class SignDocumentView(APIView):
             docs = get_signed_docs_by_user(request)
             queryset['docs'] = docs
             queryset['succ_or_err'] = ''
-            queryset['info'] = request.user
             filename = str(request.FILES['file'])  # received file name
             file_obj_data = request.data['file']
             key_id = request.POST['keys']
@@ -215,8 +214,7 @@ class SignDocumentView(APIView):
             if success:
                 queryset['succ_or_err'] = 'Документ подписан'
                 queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
-                # return download(request, PATH, filename)
-                # remove_document(PATH)
+                queryset['info'] = request.user
                 if os.path.exists(PATH):
                     os.remove(PATH)
                 return render(request, 'Signature/private_page.html', queryset)
