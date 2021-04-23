@@ -77,9 +77,11 @@ html,body{
     text-align: center;
 }
 
+/*
+  из-за этого не отправляет файл на сервер через фетч
 .createSignForm input[type='file']{
     display: none;
-}
+}*/
 
 .file_upload{
     text-align: center;

@@ -47,17 +47,21 @@ def get_private_key(pk):
     return KeyTable.objects.get(pk=pk)
 
 
+def set_signed_doc_DB(file_name, doc_hash, public_key, signature, key_table):
+    signed_doc = SignedDocument.objects.create(document_title=file_name,
+                                               document_hash=doc_hash, public_key=public_key.decode('ascii'),
+                                               signature=signature, key_table_id=key_table)
+    signed_doc.save()
+
+
 def add_signed_doc(file_name, key_id, PATH):
     try:
         key_table = get_private_key(key_id)
         key = loadKey(key_table.key.encode('ascii'))
         public_key = serializePublicKey(key.public_key())
         signature, doc_hash = signDocument(PATH, key)
+        set_signed_doc_DB(file_name, doc_hash, public_key, signature, key_table)
 
-        signedDoc = SignedDocument.objects.create(document_title=file_name,
-                                                  document_hash=doc_hash, public_key=public_key.decode('ascii'),
-                                                  signature=signature, key_table_id=key_table)
-        signedDoc.save()
         return True
     except IntegrityError:
         return False

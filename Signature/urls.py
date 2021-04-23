@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.urls import path
+from django.urls import path,include
 from rest_framework.routers import SimpleRouter
 
 from Signature import views
@@ -17,6 +17,12 @@ urlpatterns = [
     path('uploadHandler', views.VerifyDocumentView.as_view()),
     path('generateKey', views.GenerateKeyView.as_view()),
     path('signDocHandler', views.SignDocumentView.as_view()),
+
+    path('testsignDocHandler', views.TestVSignDocumentView.as_view(), name='testsignDocHandler'),
+    # path('testUploadDoc', views.TestUploadDocumentView.as_view(), name='testUploadDoc'),
+    path('testUploadDoc', views.test_upload_document_view, name='testUploadDoc'),
+    path('testSingDoc', views.test_sing_document_view, name='testSingDoc'),
+
     path('admin-page', views.testView, name='admin-page'),
     # path('front-page', views.firstPageView, name='front-page'),
     path('dedicated-page', views.dedicatedPageView, name='dedicated-page'),

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer
-from .models import KeyTable, SignedDocument
+from .models import KeyTable, SignedDocument, TestVdDocument, TestVKeyTable, TestVSignedForDocument
 
 
 class KeyTableSerializer(ModelSerializer):
@@ -25,3 +25,5 @@ class KeyFieldSerializer(ModelSerializer):
     class Meta:
         model = KeyTable
         fields = ["key_id", "key_name", 'user', "dateOfExpiration"]
+
+######################################
