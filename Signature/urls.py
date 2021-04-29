@@ -18,10 +18,11 @@ urlpatterns = [
     path('generateKey', views.GenerateKeyView.as_view()),
     path('signDocHandler', views.SignDocumentView.as_view()),
 
-    path('testsignDocHandler', views.TestVSignDocumentView.as_view(), name='testsignDocHandler'),
+    # path('testsignDocHandler', views.TestVSignDocumentView.as_view(), name='testsignDocHandler'),
     # path('testUploadDoc', views.TestUploadDocumentView.as_view(), name='testUploadDoc'),
     path('testUploadDoc', views.test_upload_document_view, name='testUploadDoc'),
     path('testSingDoc', views.test_sing_document_view, name='testSingDoc'),
+    path('testVerifyDoc', views.test_verify_document_view, name='testVerifyDoc'),
 
     path('admin-page', views.testView, name='admin-page'),
     # path('front-page', views.firstPageView, name='front-page'),

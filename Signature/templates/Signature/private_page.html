@@ -31,13 +31,13 @@
                     <div>
                         <form  class='createSignForm singdoc' method="post" id="formElem_sing_doc">
                         {% csrf_token %}
-                            <select name="documents_name">
+                            <select name="documents_name_sing">
                                     <option value=""  selected disabled>Выберите выберете документ для подписи</option>
                                     {% if user_documents %}
-                                    {% for doc in user_documents %}
-                                        <option value="{{doc.id}}">{{ doc.document_title }}</option>
-                                    {% endfor %}
-                                {% endif %}
+                                        {% for doc in user_documents %}
+                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>
+                                        {% endfor %}
+                                    {% endif %}
                             </select>
                             <input type="submit" name='submit' value="Подписать документ">
                         </form>
@@ -46,11 +46,17 @@
                 <button  class="signature_button">Проверить документ</button>
                 <div class="signature_panel">
                     <div>
-                        <form class='createSignForm' method="post" action="/uploadHandler" enctype="multipart/form-data">
+                        <form class='createSignForm verify' method="post" id="formElem_verify_doc">
                             {% csrf_token %}
-                            <input id="verify_upload" name='file' type="file"/>
-                            <label for="verify_upload" class="file_upload">Выберите файл</label>
-                            <input style="padding-left:71px" type="submit" id="check">
+                            <select name="documents_name_verify">
+                                    <option value=""  selected disabled>Выберите выберете документ для проверки</option>
+                                    {% if user_documents %}
+                                        {% for doc in user_documents %}
+                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                            </select>
+                            <input type="submit" name="submit" value="Поддлиность документа">
                         </form>
                     </div>
                 </div>

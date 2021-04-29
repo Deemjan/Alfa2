@@ -49,14 +49,14 @@ class TestVKeyTable(models.Model):
                                         verbose_name='Срок действия подписи')
 
     def __str__(self):
-        return f"Тестовая таблица ключей - {self.key_id}, название подписи - {self.key_name}, срок действия до - " \
+        return f"Тестовая таблица ключей - {self.id}, название подписи - {self.key_name}, срок действия до - " \
                f"{self.dateOfExpiration} "
 
 
 class TestVdDocument(models.Model):
     document_title = models.CharField(max_length=100, unique=True)
     document_file = models.FileField(upload_to='uploads/')
-    # key_table_id = models.ForeignKey(KeyTable, on_delete=models.CASCADE, null=True) Получать ключ по юзеру
+    # key_table_id = models.ForeignKey(KeyTable, on_delete=models.CASCADE, null=True)
     date_of_creation = models.DateField(default=NOW)
     date_for_logs = models.DateTimeField(default=NOW)
     user = models.ManyToManyField(User)
@@ -70,6 +70,8 @@ class TestVSignedForDocument(models.Model):
     document_hash = models.TextField(blank=True)
     signature = models.BinaryField()
     signed = models.ForeignKey(TestVdDocument, on_delete=models.CASCADE)
+    key_table_id = models.ForeignKey(TestVKeyTable, on_delete=models.CASCADE, null=True)
+    date_signed = models.DateField(default=NOW)
 
     def __str__(self):
         return f"Подписи для документа {self.signed.document_title}"
