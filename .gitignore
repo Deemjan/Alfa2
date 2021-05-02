@@ -4,3 +4,7 @@ __pycache__
 env
 tutorial-env
 media
+db.sqlite3
+debug_signature_cryptography.json
+debug_signature_services.json
+debug_signature_views.json

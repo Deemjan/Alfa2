@@ -42,7 +42,7 @@ class SignedDocument(models.Model):
 
 class TestVKeyTable(models.Model):
     key_name = models.CharField(max_length=100, default='Имя ключа', verbose_name='Название подписи', unique=True)
-    key = models.TextField(unique=True)
+    key = models.BinaryField(unique=True)
     dateOfCreation = models.DateField(default=NOW)
     user = models.OneToOneField(User, on_delete=models.CASCADE, default=1)
     dateOfExpiration = models.DateField(default=NOW + timezone.timedelta(days=30),
