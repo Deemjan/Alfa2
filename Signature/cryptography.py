@@ -129,12 +129,13 @@ logger.add("debug_signature_cryptography.json", format="{time} {level} {message}
 @logger.catch
 def _add_signed_doc(file: object, key_obj: object):
     """Определяем публичный и приватные ключи, подписываем документ и делаем запись в БД"""
-    key = _load_key(key_obj.key.encode('ascii'))
+    # key = _load_key(key_obj.key.encode('ascii'))
+    key = _load_key(key_obj.key)
     public_key = _serialize_public_key(key.public_key())
     signature, doc_hash = _sign_document(file.document_file.path, key)
     print('asfasfas', type(file), type(doc_hash), type(public_key), type(signature), type(key_obj))
+    print(public_key, signature)
     _set_signed_doc_DB(file, doc_hash, public_key, signature, key_obj)
-
 
 
 @logger.catch
@@ -154,7 +155,8 @@ def _serialize_public_key(key: object) -> object:
 
 @logger.catch
 def _set_signed_doc_DB(file, doc_hash, public_key, signature, key_table):
-    """Запись в таблицу TestVSignedForDocument информации""" ## вроде работает без  public_key=public_key.decode('ascii')
+    """Запись в таблицу TestVSignedForDocument информации"""  # # вроде работает без  public_key=public_key.decode(
+    # 'ascii')
     sig = TestVSignedForDocument.objects.create(public_key=public_key, document_hash=doc_hash,
                                                 signature=signature, signed=file, key_table_id=key_table)
     sig.save()

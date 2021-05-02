@@ -41,7 +41,7 @@ def generate_user_signature(username):
     test_user = User.objects.get(username=username)
     test_key_name = f"Подпись {user.first_name} {user.last_name}"
     test_private_key = serializePrivateKey(key)
-    test_key_table = TestVKeyTable.objects.create(user=test_user, key=test_private_key.decode('ascii'),
+    test_key_table = TestVKeyTable.objects.create(user=test_user, key=test_private_key,
                                                   key_name=test_key_name)
     test_key_table.save()
 

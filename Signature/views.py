@@ -285,12 +285,11 @@ def test_upload_document_view(request):
         filename = str(request.FILES['file'])
         file_obj_data = request.data['file']
         PATH = 'static/file_storage/' + filename
-        _get_signed_docs_by_user(request.user, filename, file_obj_data)
+        signed_docs_by_user = _get_signed_docs_by_user(request.user, filename, file_obj_data)
         # set_document_db(filename, file_obj_data, request.user, PATH)
         return JsonResponse({'success': True, 'message': 'Файл загружен'})
     except Exception:
         return JsonResponse({'success': False, 'message': 'Документ не загружен'})
-
 
 
 @logger.catch
@@ -314,7 +313,7 @@ def _get_signed_docs_by_user(user: object, document_title: str, document_file) -
                 first_name = sign.key_table_id.user.first_name
                 last_name = sign.key_table_id.user.last_name
                 print(document_file.file)
-                print(f'странное условме равно {_is_valid(document_file, document_title, sign)}')
+                print(f'странное условие равно {_is_valid(document_file, document_title, sign)}')
                 if _is_valid(document_file, document_title, sign):
                     print(f'подпись валидна ?_is_valid= {signed}')
                     msg = f'{first_name} {last_name} подписал документ {sign.date_signed}. Документ подлиный'
@@ -329,7 +328,8 @@ def _get_signed_docs_by_user(user: object, document_title: str, document_file) -
             print(f'нет подписей')
             _add_user_to_document_db(filename=document_title, file_obj_data=document_file, user=user)
     else:
-        set_document_db(filename=document_title, file_obj_data=document_file,user=user)
+        set_document_db(filename=document_title, file_obj_data=document_file, user=user)
+    return information_about_signed
 
 
 @logger.catch
@@ -344,12 +344,13 @@ def _add_user_to_document_db(filename: str, file_obj_data: object, user: object)
 
 @logger.catch
 def _is_valid(document_file: object, document_title: str, signed: QuerySet) -> bool:
-
     print(f'data is {_date_is_valid(signed.date_signed)}')
     if not _date_is_valid(signed.date_signed):
         return False
-    print(f'verify is {_verify_document(document_file, signed.public_key, signed.signature)}')
-    return _verify_document(document_file, signed.public_key, signed.signature)
+    print(f'{document_file} {signed.public_key} {signed.signature}')
+    verif = _verify_document(document_file, signed.public_key, signed.signature)
+    print(f'verify is {verif}')
+    return verif
 
 
 @logger.catch
@@ -361,23 +362,26 @@ def _date_is_valid(expiration_date):
 
 @logger.catch
 def _verify_document(document: InMemoryUploadedFile, public_key: object, signature: object) -> bool:
-    public_key = serialization.load_pem_public_key(public_key, backend=default_backend())
-    # public_key = serialization.load_pem_public_key(public_key.encode('ascii'), backend=default_backend())
-    # with open(document.path, 'rb') as file:
-    print(document, type(document))
-    print(document, type(document.file))
-    print(document, type(document.file.read()))
-    message = document.file.read()
-    print('dfsdfdsfds', message)
-    public_key.verify(
-        signature,
-        message,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH),
-        hashes.SHA256())
-    # return True
-    return False
+    try:
+        public_key = serialization.load_pem_public_key(public_key, backend=None)
+        # public_key = serialization.load_pem_public_key(public_key.encode('ascii'), backend=default_backend())
+        # with open(document.path, 'rb') as file:
+        # print(document, type(document))
+        # print(document, type(document.file))
+        # print(document, type(document.file.read()))
+        message = document.open().read()
+        # print(f'PUBLIC KEY : {public_key} ############# SIGNATURE : {signature}')
+        # print('dfsdfdsfds', message)
+        public_key.verify(
+            signature,
+            message,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH),
+            hashes.SHA256())
+        return True
+    except InvalidSignature as exception:
+        print(exception)
 
 
 @api_view(['POST'])
