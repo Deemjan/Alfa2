@@ -132,7 +132,7 @@ def _add_signed_doc(file: object, key_obj: object):
     key = _load_key(key_obj.key.encode('ascii'))
     public_key = _serialize_public_key(key.public_key())
     signature, doc_hash = _sign_document(file.document_file.path, key)
-    # print('asfasfas', type(file), type(doc_hash), type(public_key), type(signature), type(key_obj))
+    print('asfasfas', type(file), type(doc_hash), type(public_key), type(signature), type(key_obj))
     _set_signed_doc_DB(file, doc_hash, public_key, signature, key_obj)
 
 

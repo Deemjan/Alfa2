@@ -294,7 +294,7 @@ def test_upload_document_view(request):
 
 
 @logger.catch
-def _get_signed_docs_by_user(user: object, document_title: str, document_file: object) -> object:
+def _get_signed_docs_by_user(user: object, document_title: str, document_file) -> object:
     """
     Проверка документа на подлиность:
         1. Проверить существование такого документа в БД
@@ -324,7 +324,6 @@ def _get_signed_docs_by_user(user: object, document_title: str, document_file: o
                     msg = f'{first_name} {last_name} подписал документ {sign.date_signed}. Документ не прошел ' \
                           f'проверку на подлиность'
                     print(msg)
-
         else:
             print(f'add user to document= {signed}')
             print(f'нет подписей')
