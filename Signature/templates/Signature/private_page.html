@@ -7,6 +7,7 @@
 
     {% block link %}
         <link rel="stylesheet" href="{% static "Signature/css/style_private.css" %}">
+
     {% endblock %}
 
 {% block content %}
@@ -15,48 +16,47 @@
         <div class="content_signature">
             <p>Управление подписями и документами</p>
             <div>
-{#                <button class="signature_button" >Создать подпиcь</button>#}
-{#                <div class="signature_panel">#}
-{#                    <div>#}
-{#                        <form  class='createSignForm' method="post" action="/generateKey" enctype="application/json">#}
-{#                        {% csrf_token %}#}
-{#                            <label for="sing">Название подписи</label>#}
-{#                            <input type="text" id="sing"  name="Название подписи" placeholder="Введите название">#}
-{#                            <label for="date_sing">Срок действия подписи</label>#}
-{#                            <input type="date" name="Дата" id="date_sing">#}
-{#                            <input type="submit" name='submit' value="Создать подпись">#}
-{#                         </form>#}
-{#                    </div>#}
-{#                </div>#}
+                <button  class="signature_button">Загрузить документ</button>
+                <div class="signature_panel">
+                    <div>
+                        <form  class='createSignForm uploaddoc'  name="form" method="post" id="formElem"  enctype="multipart/form-data">
+                        {% csrf_token %}
+                            <input type="file" name="file" class="file_upload">
+                            <input type="submit" name='submit' value="Загрузить документ">
+                        </form>
+                    </div>
+                </div>
                 <button  class="signature_button">Подписать документ</button>
                 <div class="signature_panel">
                     <div>
-                        <form  class='createSignForm' method="post" action="/signDocHandler" enctype="multipart/form-data">
+                        <form  class='createSignForm singdoc' method="post" id="formElem_sing_doc">
                         {% csrf_token %}
-                            <select name="keys">
-                                    <option value=""  selected disabled>Выберите ключ для подписи</option>
-                                    {% if user_keys %}
-                                    {% for key in user_keys %}
-                                        <option value="{{key.key_id}}">{{ key.key_name }}</option>
-                                    {% endfor %}
-                                {% endif %}
+                            <select name="documents_name_sing">
+                                    <option value=""  selected disabled>Выберите выберете документ для подписи</option>
+                                    {% if user_documents %}
+                                        {% for doc in user_documents %}
+                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>
+                                        {% endfor %}
+                                    {% endif %}
                             </select>
-                            <label for="upload" class="file_upload">Выберите файл</label>
-                            <input id="upload" name='file' type="file"/>
-{#                            <input type="file" name="file" class="file_upload">#}
-                                <input type="submit" name='submit' value="Подписать документ">
-
+                            <input type="submit" name='submit' value="Подписать документ">
                         </form>
                     </div>
                 </div>
                 <button  class="signature_button">Проверить документ</button>
                 <div class="signature_panel">
                     <div>
-                        <form class='createSignForm' method="post" action="/uploadHandler" enctype="multipart/form-data">
+                        <form class='createSignForm verify' method="post" id="formElem_verify_doc">
                             {% csrf_token %}
-                            <input id="verify_upload" name='file' type="file"/>
-                            <label for="verify_upload" class="file_upload">Выберите файл</label>
-                            <input style="padding-left:71px" type="submit" id="check">
+                            <select name="documents_name_verify">
+                                    <option value=""  selected disabled>Выберите выберете документ для проверки</option>
+                                    {% if user_documents %}
+                                        {% for doc in user_documents %}
+                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>
+                                        {% endfor %}
+                                    {% endif %}
+                            </select>
+                            <input type="submit" name="submit" value="Поддлиность документа">
                         </form>
                     </div>
                 </div>
@@ -89,4 +89,8 @@
             </table>
         </div>
     </div>
+    <script>
+
+
+        </script>
 {% endblock %}

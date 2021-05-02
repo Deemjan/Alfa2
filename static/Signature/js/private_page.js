@@ -19,4 +19,59 @@ function expand() {
             }
         }
 
+
         expand();
+
+formElem.onsubmit = async (e) => {
+    e.preventDefault();
+
+    let select = document.querySelector('.uploaddoc');
+    let input = select.querySelector('input[type="file"]');
+    const token = select.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    let data = new FormData(formElem);
+    data.append('usert', 'hubot');
+    let response = await fetch("testUploadDoc", {
+      method: 'POST',
+      body: data,
+      credentials: 'same-origin',
+    });
+    let result = await response.json();
+    console.log(result);
+    alert(result.message);
+};
+
+formElem_sing_doc.onsubmit = async (e) => {
+    e.preventDefault();
+
+    let select = document.querySelector('.singdoc');
+    const token = select.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    let data = new FormData(formElem_sing_doc);
+    let response = await fetch("testSingDoc", {
+      method: 'POST',
+      body: data,
+      credentials: 'same-origin',
+    });
+    let result = await response.json();
+    console.log(result);
+    alert(result.message);
+};
+
+
+formElem_verify_doc.onsubmit = async (e) => {
+    e.preventDefault();
+
+    let select = document.querySelector('.verify');
+    const token = select.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    let data = new FormData(formElem_verify_doc);
+    let response = await fetch("testVerifyDoc", {
+      method: 'POST',
+      body: data,
+      credentials: 'same-origin',
+    });
+    let result = await response.json();
+    console.log(result);
+    alert(result.message);
+};

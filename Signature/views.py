@@ -1,23 +1,39 @@
+import json
+import datetime
 import os
 
+from cryptography.hazmat.backends import default_backend
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
-from django.http import HttpResponse
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db.models import QuerySet
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 # Create your views here.
 from django.utils.dateparse import parse_date
-from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
+from cryptography.hazmat.primitives.asymmetric import rsa, padding, utils
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import serialization, hashes
 from Signature.cryptography import isValid, generateKey, serializePrivateKey, add_signed_doc, dateIsValid
-from Signature.models import KeyTable, SignedDocument
+from Signature.models import KeyTable, SignedDocument, TestVdDocument, TestVKeyTable, TestVSignedForDocument
 from Signature.permissions import IsAuthenticatedAndKeyOwner
 from Signature.serialize import KeyTableSerializer, SignedDocumentSerializer, UserSerializer, KeyFieldSerializer
+from loguru import logger
+
+from Signature.services import set_document_db, sing_document
+
+logger.add("debug_signature_views.json", format="{time} {level} {message}",
+           level="DEBUG", rotation="1 week", compression="zip", serialize=True)
 
 
 class KeyTableViewSet(ModelViewSet):
@@ -97,6 +113,11 @@ def dedicatedPageView(request):
             key = KeyTable.objects.get(key_id=n)
             key.dateOfExpiration = date
             key.save()
+
+            # key2 = TestVKeyTable.objects.get(key_id=n)
+            # key2.dateOfExpiration = date
+            # key2.save()
+
             queryset['succ_or_err'] = 'Изменения сохранены'
 
         queryset['user_keys'] = KeyTable.objects.filter(user_id=request.query_params['user'])
@@ -120,7 +141,12 @@ def dedicatedPageView(request):
 @login_required(login_url='login-page')
 def privatePageView(request):
     docs = get_signed_docs_by_user(request)
-    queryset = {'user_keys': KeyTable.objects.filter(user=request.user), 'create_key': '', 'docs': docs,
+    users = User.objects.get(username=request.user)
+    queryset = {'user_keys': KeyTable.objects.filter(user=request.user),
+                'create_key': '',
+                'docs': docs,
+                'user_documents': users.testvddocument_set.all(),
+                ### добавил для вывода всех загруженных документов пользователем
                 'succ_or_err': ''}
     return render(request, 'Signature/private_page.html', queryset)
 
@@ -194,7 +220,7 @@ class SignDocumentView(APIView):
 
     def post(self, request, format=None):
         try:
-        # remove_document()
+            # remove_document()
             queryset = {}
 
             docs = get_signed_docs_by_user(request)
@@ -241,31 +267,146 @@ def download(request, PATH, filename):
         return response
 
 
+# Не нужен так как нет необходимости в из вне создавать ключ
 class GenerateKeyView(APIView):
     parser_classes = (JSONParser, FormParser, MultiPartParser,)
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, format=None):
-        try:
-            queryset = {}
-            user = request.user
-            key = generateKey()
-            key_name = request.data['Название подписи']
-            private_key = serializePrivateKey(key)
-            date_of_expiration = request.data['Дата']
 
-            if dateIsValid(date_of_expiration):
-                keyTable = KeyTable.objects.create(user=user, key=private_key.decode('ascii'), key_name=key_name,
-                                                   dateOfExpiration=date_of_expiration)
-                keyTable.save()
-                queryset['succ_or_err'] = 'Ключ создан'
-                queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
-                return render(request, 'Signature/private_page.html', queryset)
-            else:
-                queryset['succ_or_err'] = 'Некорректная дата'
-                queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
-                return render(request, 'Signature/private_page.html', queryset)
-        except Exception:
-            queryset['succ_or_err'] = 'Что-то пошло не так'
-            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
-            return render(request, 'Signature/private_page.html', queryset)
+#################
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@login_required(login_url='login-page')
+@logger.catch
+def test_upload_document_view(request):
+    """"Загрузка документа на сервер и в БД"""
+    try:
+        filename = str(request.FILES['file'])
+        file_obj_data = request.data['file']
+        PATH = 'static/file_storage/' + filename
+        _get_signed_docs_by_user(request.user, filename, file_obj_data)
+        # set_document_db(filename, file_obj_data, request.user, PATH)
+        return JsonResponse({'success': True, 'message': 'Файл загружен'})
+    except Exception:
+        return JsonResponse({'success': False, 'message': 'Документ не загружен'})
+
+
+
+@logger.catch
+def _get_signed_docs_by_user(user: object, document_title: str, document_file) -> object:
+    """
+    Проверка документа на подлиность:
+        1. Проверить существование такого документа в БД
+        2. Проверить есть ли у него подписи
+        3. Вернуть ответ
+    """
+    information_about_signed = []
+    document_in_db = TestVdDocument.objects.filter(document_title=document_title)
+    print(f'document_in_db = {document_in_db} document_title= {document_title}')
+    if document_in_db.exists():
+        print('документ существует')
+        document_in_db = TestVdDocument.objects.get(document_title=document_title)
+        signed = document_in_db.testvsignedfordocument_set.all()
+        if signed.exists():
+            print(f'Есть хотя бы одна подпись')
+            for sign in signed:
+                first_name = sign.key_table_id.user.first_name
+                last_name = sign.key_table_id.user.last_name
+                print(document_file.file)
+                print(f'странное условме равно {_is_valid(document_file, document_title, sign)}')
+                if _is_valid(document_file, document_title, sign):
+                    print(f'подпись валидна ?_is_valid= {signed}')
+                    msg = f'{first_name} {last_name} подписал документ {sign.date_signed}. Документ подлиный'
+                    print(msg)
+                    information_about_signed.append(msg)
+                else:
+                    msg = f'{first_name} {last_name} подписал документ {sign.date_signed}. Документ не прошел ' \
+                          f'проверку на подлиность'
+                    print(msg)
+        else:
+            print(f'add user to document= {signed}')
+            print(f'нет подписей')
+            _add_user_to_document_db(filename=document_title, file_obj_data=document_file, user=user)
+    else:
+        set_document_db(filename=document_title, file_obj_data=document_file,user=user)
+
+
+@logger.catch
+def _add_user_to_document_db(filename: str, file_obj_data: object, user: object) -> None:
+    """"Запрос на добавление пользователя к документу в БД"""
+    users = User.objects.get(username=user)
+    document = TestVdDocument.objects.get(document_title=filename)
+    document.user.add(users)
+    document.save()
+    # users.testvddocument_set.add(document_title=filename, document_file=file_obj_data)
+
+
+@logger.catch
+def _is_valid(document_file: object, document_title: str, signed: QuerySet) -> bool:
+
+    print(f'data is {_date_is_valid(signed.date_signed)}')
+    if not _date_is_valid(signed.date_signed):
+        return False
+    print(f'verify is {_verify_document(document_file, signed.public_key, signed.signature)}')
+    return _verify_document(document_file, signed.public_key, signed.signature)
+
+
+@logger.catch
+def _date_is_valid(expiration_date):
+    if isinstance(expiration_date, str):
+        expiration_date = parse_date(expiration_date)
+    return datetime.datetime.now().date() <= expiration_date
+
+
+@logger.catch
+def _verify_document(document: InMemoryUploadedFile, public_key: object, signature: object) -> bool:
+    public_key = serialization.load_pem_public_key(public_key, backend=default_backend())
+    # public_key = serialization.load_pem_public_key(public_key.encode('ascii'), backend=default_backend())
+    # with open(document.path, 'rb') as file:
+    print(document, type(document))
+    print(document, type(document.file))
+    print(document, type(document.file.read()))
+    message = document.file.read()
+    print('dfsdfdsfds', message)
+    public_key.verify(
+        signature,
+        message,
+        padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH),
+        hashes.SHA256())
+    # return True
+    return False
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@login_required(login_url='login-page')
+@logger.catch
+def test_sing_document_view(request):
+    """Подписать выбранный файл"""
+    try:
+        print(request.POST)
+        document_id = request.POST['documents_name_sing']
+        sing_document(document_id, request.user)
+        return JsonResponse({'success': True, 'message': 'Документ подписан'})
+    except Exception:
+        return JsonResponse({'success': False, 'message': 'Ошибка. Документ не подписан'})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@login_required(login_url='login-page')
+@logger.catch
+def test_verify_document_view(request):
+    """Проверить документ на подлинность"""
+    print(request.POST)
+    # docs = _get_signed_docs_by_user(request.user, request.POST['documents_name_verify'])
+
+    # success, info_user = isValid(PATH, filename)
+    return JsonResponse({'success': True, 'message': 'Документ подлинный'})
+
+#### Нужно сгенирировать ключ +
+###Подписать документ +
+# Рефактор проверки на подлиность
