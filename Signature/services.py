@@ -17,7 +17,7 @@ def set_document_db(filename: str, file_obj_data: object, user: object) -> None:
 
 @logger.catch
 def sing_document(file_id: int, user: object):
-    """Находим необходмые document и key, после добавляем подпись документу"""
+    """Находим необходимые document и key, после добавляем подпись документу"""
     document = TestVdDocument.objects.get(pk=file_id)
     user = User.objects.get(username=user)
     print(f'sing_document {user}  {user.pk} {user.username} ')

@@ -75,3 +75,35 @@ formElem_verify_doc.onsubmit = async (e) => {
     console.log(result);
     alert(result.message);
 };
+
+fillUserDocumentsTable();
+
+function fillUserDocumentsTable(){
+    let docTable = document.getElementById("docTable");
+    let docInfo = getUserDocuments();
+    console.log(docInfo)
+    for (let i = 0; i < 3;i++){
+        let newRow = docTable.insertRow(docTable.length)
+        for (let j = 0; j< 3;j++){
+            let cell = newRow.insertCell(j);
+            cell.innerHTML = "1";
+        }
+    }
+}
+
+async function getUserDocuments() {
+    let response = await fetch("testGetUsersDocs", {
+        method: 'GET',
+        credentials: "same-origin"
+    });
+    if (response.ok){
+        let json = await response.json()
+        console.log(json)
+        console.log(json.docs)
+        console.log(json.success)
+        return(json.docs)
+    }
+    else(
+        console.log(response.status)
+    )
+}

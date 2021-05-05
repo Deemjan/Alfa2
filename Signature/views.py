@@ -411,6 +411,47 @@ def test_verify_document_view(request):
     # success, info_user = isValid(PATH, filename)
     return JsonResponse({'success': True, 'message': 'Документ подлинный'})
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@login_required(login_url='login-page')
+@logger.catch
+def test_get_users_signed_documents(request):
+    """Возвращает название документа, кем и когда документ был подписан"""
+    docs = get_signed_docs_by_user2(request).values("id", "signed", "date_signed")
+    print(f"docs : {docs}")
+    user = User.objects.get(username=request.user)
+    # user_keys = KeyTable.objects.filter(user=request.user).values()
+    # user_documents = user.testvddocument_set.all()
+    # print(f"user_documents : {user_documents}")
+    # print(f"user_keys: {user_keys}")
+    print(f"user: {user}")
+    return JsonResponse({'success': True,
+                         'docs': list(docs)})
+
+    # except Exception:
+    #     return JsonResponse({'success': False,
+    #                          'docs':[],
+    #                          'user_keys':[],
+    #                          'user_documents':[]})
+
+
+    # <td> {{doc.document_title}}</td>
+    # <td>{{doc.key_table_id.user.first_name}} {{doc.key_table_id.user.last_name}}</td>
+    # <td>{{doc.date_for_logs|date:"d-m-Y H:i"}}</td>
+
+
+def get_signed_docs_by_user2(request, user=None):
+    user = user if user is not None else request.user
+    try:
+        key_table = TestVKeyTable.objects.get(user=user)
+        signed_docs = TestVSignedForDocument.objects.filter(key_table_id=key_table)
+        return signed_docs
+    except TestVKeyTable.DoesNotExist:
+        return TestVKeyTable.objects.none()
+
+
+
 #### Нужно сгенирировать ключ +
 ###Подписать документ +
 # Рефактор проверки на подлиность
