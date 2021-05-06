@@ -366,21 +366,14 @@ def _date_is_valid(expiration_date):
     return datetime.datetime.now().date() <= expiration_date
 
 
+############################################## TEST #########################################################
 @logger.catch
-def _verify_document(document: InMemoryUploadedFile, public_key: object, signature: object) -> bool:
+def _verify_document(document: InMemoryUploadedFile, public_key: bytes, signature: bytes) -> bool:
     try:
         public_key = serialization.load_pem_public_key(public_key, backend=None)
-        # public_key = serialization.load_pem_public_key(public_key.encode('ascii'), backend=default_backend())
-        # with open(document.path, 'rb') as file:
-        # print(document, type(document))
-        # print(document, type(document.file))
-        # print(document, type(document.file.read()))
         message = document.open().read()
-        print(type(message))
-        # print(f'PUBLIC KEY : {public_key} ############# SIGNATURE : {signature}')
-        # print('dfsdfdsfds', message)
         public_key.verify(
-            signature,
+            bytes(signature),
             message,
             padding.PSS(
                 mgf=padding.MGF1(hashes.SHA256()),
@@ -413,9 +406,6 @@ def test_sing_document_view(request):
 def test_verify_document_view(request):
     """Проверить документ на подлинность"""
     print(request.POST)
-    # docs = _get_signed_docs_by_user(request.user, request.POST['documents_name_verify'])
-
-    # success, info_user = isValid(PATH, filename)
     return JsonResponse({'success': True, 'message': 'Документ подлинный'})
 
 
