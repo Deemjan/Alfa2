@@ -418,7 +418,7 @@ def test_verify_document_view(request):
 @logger.catch
 def test_get_users_signed_documents(request):
     """Возвращает название документа, кем и когда документ был подписан"""
-    docs = get_signed_docs_by_user2(request).values("id", "signed", "date_signed")
+    docs = test_get_signed_docs_by_user(request)
     print(f"docs : {docs}")
     user = User.objects.get(username=request.user)
     # user_keys = KeyTable.objects.filter(user=request.user).values()
@@ -427,7 +427,7 @@ def test_get_users_signed_documents(request):
     # print(f"user_keys: {user_keys}")
     print(f"user: {user}")
     return JsonResponse({'success': True,
-                         'docs': list(docs)})
+                         'docs': docs})
 
     # except Exception:
     #     return JsonResponse({'success': False,
@@ -435,22 +435,24 @@ def test_get_users_signed_documents(request):
     #                          'user_keys':[],
     #                          'user_documents':[]})
 
-
     # <td> {{doc.document_title}}</td>
     # <td>{{doc.key_table_id.user.first_name}} {{doc.key_table_id.user.last_name}}</td>
     # <td>{{doc.date_for_logs|date:"d-m-Y H:i"}}</td>
 
 
-def get_signed_docs_by_user2(request, user=None):
+def test_get_signed_docs_by_user(request, user=None):
     user = user if user is not None else request.user
     try:
         key_table = TestVKeyTable.objects.get(user=user)
         signed_docs = TestVSignedForDocument.objects.filter(key_table_id=key_table)
-        return signed_docs
+        docs = []
+        for doc in signed_docs:
+            docs.append(dict(title=f"{doc.signed.document_title}",
+                             date=f"{doc.date_signed}",
+                             user=f"{user.first_name} {user.last_name}"))
+        return docs
     except TestVKeyTable.DoesNotExist:
         return TestVKeyTable.objects.none()
-
-
 
 #### Нужно сгенирировать ключ +
 ###Подписать документ +

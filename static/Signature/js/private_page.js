@@ -76,34 +76,25 @@ formElem_verify_doc.onsubmit = async (e) => {
     alert(result.message);
 };
 
-fillUserDocumentsTable();
+fillUserDocumentsTable()
 
-function fillUserDocumentsTable(){
+async function  fillUserDocumentsTable(){
     let docTable = document.getElementById("docTable");
-    let docInfo = getUserDocuments();
-    console.log(docInfo)
-    for (let i = 0; i < 3;i++){
-        let newRow = docTable.insertRow(docTable.length)
-        for (let j = 0; j< 3;j++){
-            let cell = newRow.insertCell(j);
-            cell.innerHTML = "1";
-        }
-    }
-}
-
-async function getUserDocuments() {
-    let response = await fetch("testGetUsersDocs", {
+    let result = await fetch("testGetUsersDocs", {
         method: 'GET',
         credentials: "same-origin"
+    }).then(async (response)=>  {
+        return await response.json()
     });
-    if (response.ok){
-        let json = await response.json()
-        console.log(json)
-        console.log(json.docs)
-        console.log(json.success)
-        return(json.docs)
+
+    let docs = result.docs;
+    for (let i = 0; i < docs.length;i++){
+        let newRow = docTable.insertRow(docTable.length)
+        let cell = newRow.insertCell(0)
+        cell.innerHTML = docs[i].title;
+        cell = newRow.insertCell(1)
+        cell.innerHTML = docs[i].user;
+        cell = newRow.insertCell(2)
+        cell.innerHTML = docs[i].date;
     }
-    else(
-        console.log(response.status)
-    )
 }
