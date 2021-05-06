@@ -11,7 +11,7 @@ from django.utils.dateparse import parse_date
 from loguru import logger
 from rest_framework import serializers
 
-from Signature.models import SignedDocument, KeyTable, TestVSignedForDocument
+from Signature.models import TestVSignedForDocument
 
 
 def generateKey():
