@@ -39,6 +39,7 @@ formElem.onsubmit = async (e) => {
     let result = await response.json();
     console.log(result);
     alert(result.message);
+    alert(result.info);
 };
 
 formElem_sing_doc.onsubmit = async (e) => {
@@ -75,3 +76,30 @@ formElem_verify_doc.onsubmit = async (e) => {
     console.log(result);
     alert(result.message);
 };
+
+fillUserDocumentsTable()
+
+async function  fillUserDocumentsTable(){
+    let docTable = document.getElementById("docTable");
+    let result = await fetch("testGetUsersDocs", {
+        method: 'GET',
+        credentials: "same-origin"
+    }).then(async (response)=>  {
+        return await response.json()
+    });
+    if(!result.success){
+        return
+    }
+
+    let docs = result.docs;
+    console.log(result.docs)
+    for (let i = 0; i < docs.length;i++){
+        let newRow = docTable.insertRow(docTable.length)
+        let cell = newRow.insertCell(0)
+        cell.innerHTML = docs[i].title;
+        cell = newRow.insertCell(1)
+        cell.innerHTML = docs[i].users.join(', ');
+        cell = newRow.insertCell(2)
+        cell.innerHTML = docs[i].date;
+    }
+}

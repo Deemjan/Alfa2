@@ -23,6 +23,7 @@ urlpatterns = [
     path('testUploadDoc', views.test_upload_document_view, name='testUploadDoc'),
     path('testSingDoc', views.test_sing_document_view, name='testSingDoc'),
     path('testVerifyDoc', views.test_verify_document_view, name='testVerifyDoc'),
+    path('testGetUsersDocs', views.test_get_users_signed_documents, name='testGetUsersDocs'),
 
     path('admin-page', views.testView, name='admin-page'),
     # path('front-page', views.firstPageView, name='front-page'),

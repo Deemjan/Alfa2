@@ -1,4 +1,3 @@
-import json
 import datetime
 import os
 
@@ -10,22 +9,18 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import QuerySet
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-# Create your views here.
 from django.utils.dateparse import parse_date
-from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from cryptography.hazmat.primitives.asymmetric import rsa, padding, utils
-from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import serialization, hashes
-from Signature.cryptography import isValid, generateKey, serializePrivateKey, add_signed_doc, dateIsValid
-from Signature.models import KeyTable, SignedDocument, TestVdDocument, TestVKeyTable, TestVSignedForDocument
+from Signature.cryptography import isValid, add_signed_doc
+from Signature.models import TestVdDocument, TestVKeyTable, TestVSignedForDocument
 from Signature.permissions import IsAuthenticatedAndKeyOwner
 from Signature.serialize import KeyTableSerializer, SignedDocumentSerializer, UserSerializer, KeyFieldSerializer
 from loguru import logger
@@ -37,7 +32,7 @@ logger.add("debug_signature_views.json", format="{time} {level} {message}",
 
 
 class KeyTableViewSet(ModelViewSet):
-    queryset = KeyTable.objects.all()
+    queryset = TestVKeyTable.objects.all()
     serializer_class = KeyTableSerializer
     permission_classes = [IsAuthenticatedAndKeyOwner]
 
@@ -49,11 +44,11 @@ class KeyOwnerViewSet(ModelViewSet):
 
     @login_required(login_url='login-page')
     def get_queryset(self):
-        return KeyTable.objects.filter(user=self.request.user)
+        return TestVKeyTable.objects.filter(user=self.request.user)
 
 
 class SignedDocumentViewSet(ModelViewSet):
-    queryset = SignedDocument.objects.all()
+    queryset = TestVSignedForDocument.objects.all()
     serializer_class = SignedDocumentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -65,22 +60,32 @@ class UserViewSet(ModelViewSet):
 
 
 class KeyFieldViewSet(ModelViewSet):
-    queryset = KeyTable.objects.all()
+    queryset = TestVKeyTable.objects.all()
     serializer_class = KeyFieldSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return KeyTable.objects.filter(user_id=self.request.query_params['user'])
+        return TestVKeyTable.objects.filter(user_id=self.request.query_params['user'])
+
+
+# def get_signed_docs_by_user(request, user=None):
+#     user = user if user is not None else request.user
+#     try:
+#         key_table = KeyTable.objects.get(user=user)
+#         signed_docs = SignedDocument.objects.filter(key_table_id=key_table)
+#         return signed_docs
+#     except KeyTable.DoesNotExist:
+#         return KeyTable.objects.none()
 
 
 def get_signed_docs_by_user(request, user=None):
     user = user if user is not None else request.user
     try:
-        key_table = KeyTable.objects.get(user=user)
-        signed_docs = SignedDocument.objects.filter(key_table_id=key_table)
+        key_table = TestVKeyTable.objects.get(user=user)
+        signed_docs = TestVSignedForDocument.objects.filter(key_table_id=key_table)
         return signed_docs
-    except KeyTable.DoesNotExist:
-        return KeyTable.objects.none()
+    except TestVKeyTable.DoesNotExist:
+        return TestVKeyTable.objects.none()
 
 
 @login_required(login_url='login-page')
@@ -110,7 +115,7 @@ def dedicatedPageView(request):
             print(request.data)
             n = int(request.POST.get('sel'))
             date = parse_date(request.POST.get('date'))
-            key = KeyTable.objects.get(key_id=n)
+            key = TestVKeyTable.objects.get(key_id=n)
             key.dateOfExpiration = date
             key.save()
 
@@ -120,12 +125,12 @@ def dedicatedPageView(request):
 
             queryset['succ_or_err'] = 'Изменения сохранены'
 
-        queryset['user_keys'] = KeyTable.objects.filter(user_id=request.query_params['user'])
+        queryset['user_keys'] = TestVKeyTable.objects.filter(user_id=request.query_params['user'])
         queryset['docs'] = get_signed_docs_by_user(request, user=request.query_params['user'])
 
         return render(request, 'Signature/dedicated_page.html', queryset)
     except Exception:
-        queryset = {'user_keys': KeyTable.objects.filter(user_id=request.query_params['user'])}
+        queryset = {'user_keys': TestVKeyTable.objects.filter(user_id=request.query_params['user'])}
         return render(request, 'Signature/dedicated_page.html', queryset)
 
 
@@ -142,7 +147,7 @@ def dedicatedPageView(request):
 def privatePageView(request):
     docs = get_signed_docs_by_user(request)
     users = User.objects.get(username=request.user)
-    queryset = {'user_keys': KeyTable.objects.filter(user=request.user),
+    queryset = {'user_keys': TestVKeyTable.objects.filter(user=request.user),
                 'create_key': '',
                 'docs': docs,
                 'user_documents': users.testvddocument_set.all(),
@@ -183,25 +188,25 @@ class VerifyDocumentView(APIView):
             queryset['succ_or_err'] = ''
             if success:
                 queryset['succ_or_err'] = 'Документ подлинный'
-                queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+                queryset['user_keys'] = TestVKeyTable.objects.filter(user=request.user)
                 queryset['info'] = info_user
                 if os.path.exists(PATH):
                     os.remove(PATH)
                 return render(request, 'Signature/private_page.html', queryset)
             queryset['succ_or_err'] = 'Документ не прошёл проверку'
 
-            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+            queryset['user_keys'] = TestVKeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
         except ValidationError:
             if os.path.exists(PATH):
                 os.remove(PATH)
             queryset = {'succ_or_err': 'Документ не был подписан',
-                        'user_keys': KeyTable.objects.filter(user=request.user),
+                        'user_keys': TestVKeyTable.objects.filter(user=request.user),
                         'docs': get_signed_docs_by_user(request)}
             return render(request, 'Signature/private_page.html', queryset)
         except Exception as e:
             queryset = {'succ_or_err': 'Документ не загружен',
-                        'user_keys': KeyTable.objects.filter(user=request.user),
+                        'user_keys': TestVKeyTable.objects.filter(user=request.user),
                         'docs': get_signed_docs_by_user(request)}
             return render(request, 'Signature/private_page.html', queryset)
 
@@ -240,7 +245,7 @@ class SignDocumentView(APIView):
 
             if success:
                 queryset['succ_or_err'] = 'Документ подписан'
-                queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+                queryset['user_keys'] = TestVKeyTable.objects.filter(user=request.user)
                 # return download(request, PATH, filename)
                 # remove_document(PATH)
                 if os.path.exists(PATH):
@@ -251,11 +256,11 @@ class SignDocumentView(APIView):
                 os.remove(PATH)
 
             queryset['succ_or_err'] = 'Что-то пошло не так'
-            queryset['user_keys'] = KeyTable.objects.filter(user=request.user)
+            queryset['user_keys'] = TestVKeyTable.objects.filter(user=request.user)
             return render(request, 'Signature/private_page.html', queryset)
         except Exception:
             queryset = {'succ_or_err': 'Документ не загружен',
-                        'user_keys': KeyTable.objects.filter(user=request.user),
+                        'user_keys': TestVKeyTable.objects.filter(user=request.user),
                         'docs': get_signed_docs_by_user(request)}
             return render(request, 'Signature/private_page.html', queryset)
 
@@ -287,7 +292,7 @@ def test_upload_document_view(request):
         PATH = 'static/file_storage/' + filename
         signed_docs_by_user = _get_signed_docs_by_user(request.user, filename, file_obj_data)
         # set_document_db(filename, file_obj_data, request.user, PATH)
-        return JsonResponse({'success': True, 'message': 'Файл загружен'})
+        return JsonResponse({'success': True, 'message': 'Файл загружен', 'info': signed_docs_by_user})
     except Exception:
         return JsonResponse({'success': False, 'message': 'Документ не загружен'})
 
@@ -323,6 +328,7 @@ def _get_signed_docs_by_user(user: object, document_title: str, document_file) -
                     msg = f'{first_name} {last_name} подписал документ {sign.date_signed}. Документ не прошел ' \
                           f'проверку на подлиность'
                     print(msg)
+                    information_about_signed.append(msg)
         else:
             print(f'add user to document= {signed}')
             print(f'нет подписей')
@@ -370,6 +376,7 @@ def _verify_document(document: InMemoryUploadedFile, public_key: object, signatu
         # print(document, type(document.file))
         # print(document, type(document.file.read()))
         message = document.open().read()
+        print(type(message))
         # print(f'PUBLIC KEY : {public_key} ############# SIGNATURE : {signature}')
         # print('dfsdfdsfds', message)
         public_key.verify(
@@ -410,6 +417,49 @@ def test_verify_document_view(request):
 
     # success, info_user = isValid(PATH, filename)
     return JsonResponse({'success': True, 'message': 'Документ подлинный'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@login_required(login_url='login-page')
+@logger.catch
+def test_get_users_signed_documents(request):
+    """Возвращает название документа, кем и когда документ был подписан"""
+    try:
+        docs = test_get_signed_docs_by_user(request)
+        if len(docs) == 0:
+            return JsonResponse({'success': False})
+        print(f"docs : {docs}")
+        user = User.objects.get(username=request.user)
+        print(f"user: {user}")
+        return JsonResponse({'success': True,
+                             'docs': docs})
+    except Exception:
+        return JsonResponse({'success': False,
+                             'docs': [],
+                             'user_keys': [],
+                             'user_documents': []})
+
+
+def test_get_signed_docs_by_user(request, user=None):
+    user = user if user is not None else request.user
+    try:
+        key_table = TestVKeyTable.objects.get(user=user)
+        signed_docs = TestVSignedForDocument.objects.filter(key_table_id=key_table)
+        docs = []
+
+        for doc in signed_docs:
+            users = doc.signed.user.all()
+            users_list = []
+            for user_name in users.values("first_name", "last_name"):
+                users_list.append(f"{user_name['first_name']} {user_name['last_name']}")
+
+            docs.append(dict(title=f"{doc.signed.document_title}",
+                             date=f"{doc.date_signed}",
+                             users=users_list))
+        return docs
+    except TestVKeyTable.DoesNotExist:
+        return TestVKeyTable.objects.none()
 
 #### Нужно сгенирировать ключ +
 ###Подписать документ +
