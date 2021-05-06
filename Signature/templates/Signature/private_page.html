@@ -79,13 +79,6 @@
                     <th>Кем подписан</th>
                     <th>Когда подписан</th>
                 </tr>
-            {% for doc in docs %}
-                <tr>
-                    <td> {{doc.document_title}}</td>
-                    <td>{{doc.key_table_id.user.first_name}} {{doc.key_table_id.user.last_name}}</td>
-                    <td>{{doc.date_for_logs|date:"d-m-Y H:i"}}</td>
-                </tr>
-            {% endfor %}
             </table>
         </div>
     </div>
