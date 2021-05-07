@@ -98,10 +98,11 @@ def _is_valid(document_file: object, document_title: str, signed: QuerySet) -> b
 
 
 @logger.catch
-def _date_is_valid(expiration_date):
+def _date_is_valid(expiration_date) -> bool:
     if isinstance(expiration_date, str):
         expiration_date = parse_date(expiration_date)
     return datetime.datetime.now().date() <= expiration_date
+
 
 @logger.catch
 def _verify_document(document: InMemoryUploadedFile, public_key: bytes, signature: bytes) -> bool:
