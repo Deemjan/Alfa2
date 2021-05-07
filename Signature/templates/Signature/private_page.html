@@ -32,7 +32,7 @@
                         <form  class='createSignForm singdoc' method="post" id="formElem_sing_doc">
                         {% csrf_token %}
                             <select name="documents_name_sing">
-                                    <option value=""  selected disabled>Выберите выберете документ для подписи</option>
+                                    <option value=""  selected disabled>Выберите документ для подписи</option>
                                     {% if user_documents %}
                                         {% for doc in user_documents %}
                                             <option value="{{doc.id}}">{{ doc.document_title }}</option>
@@ -49,7 +49,7 @@
                         <form class='createSignForm verify' method="post" id="formElem_verify_doc">
                             {% csrf_token %}
                             <select name="documents_name_verify">
-                                    <option value=""  selected disabled>Выберите выберете документ для проверки</option>
+                                    <option value=""  selected disabled>Выберите документ для проверки</option>
                                     {% if user_documents %}
                                         {% for doc in user_documents %}
                                             <option value="{{doc.id}}">{{ doc.document_title }}</option>
@@ -72,6 +72,30 @@
                 {% endif %}
             </div>
         </div>
+<div class="modalTable">
+    <div class="modalDialog">
+        <div class="modalContent">
+            <div class="modalBody">
+                <div class="tableWrapper">
+                    <table class="logTable" id="infoTable">
+                        <tr>
+                            <th colspan="3" id="docName" style="background-color: #03061b">Название документа</th>
+                        </tr>
+                        <tr>
+                            <th>Кем подписан</th>
+                            <th>Когда подписан</th>
+                            <th>Верифицирован</th>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="background-color: #0B1F35; color:white; text-align: center" id="noDocsMessage">Нет документов</td>
+                        </tr>
+                    </table>
+                </div>
+                <a href="#Close" title="Закрыть" class="closeButton">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
         <div class="tableWrapper">
             <table class="logTable" id="docTable">
                 <tr>
@@ -84,6 +108,5 @@
     </div>
     <script>
 
-
-        </script>
+    </script>
 {% endblock %}

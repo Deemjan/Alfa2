@@ -39,8 +39,30 @@ formElem.onsubmit = async (e) => {
     let result = await response.json();
     console.log(result);
     alert(result.message);
-    alert(result.info);
+    console.log(result.info)
+    let modalTable = document.getElementsByClassName('modalTable')[0];
+    modalTable.style.pointerEvents= 'auto';
+    modalTable.style.opacity = '1';
+    fillInfoTable(result.info)
+
 };
+
+function fillInfoTable(infoArray){
+    let infoTable = document.getElementById('infoTable');
+    if (infoArray.length>0){
+        document.getElementById('noDocsMessage').remove();
+    }
+    document.getElementById("docName").innerHTML=`Документ: ${infoArray[0].document_title}`;
+    for (let i = 0; i < infoArray.length;i++){
+        let newRow = infoTable.insertRow(infoTable.length)
+        let cell = newRow.insertCell(0)
+        cell.innerHTML = infoArray[i].user;
+        cell = newRow.insertCell(1)
+        cell.innerHTML = infoArray[i].signed_date;
+        cell = newRow.insertCell(2)
+        cell.innerHTML = infoArray[i].validated;
+    }
+}
 
 formElem_sing_doc.onsubmit = async (e) => {
     e.preventDefault();
@@ -103,3 +125,10 @@ async function  fillUserDocumentsTable(){
         cell.innerHTML = docs[i].date;
     }
 }
+
+document.querySelector('[href="#Close"]').addEventListener('click',function (event) {
+            event.preventDefault()
+            let modalTable = document.getElementsByClassName('modalTable')[0];
+            modalTable.style.pointerEvents= 'none';
+            modalTable.style.opacity = '0';
+        })

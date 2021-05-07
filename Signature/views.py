@@ -306,6 +306,10 @@ def _get_signed_docs_by_user(user: object, document_title: str, document_file) -
         3. Вернуть ответ
     """
     information_about_signed = []
+    # Название документа : document_title
+    # Кем подписан : [f'{first_name} {last_name}',...]
+    # Когда подписан : sign.date_signed
+    # Верифицирован? : signature_validated
     document_in_db = TestVdDocument.objects.filter(document_title=document_title)
     print(f'document_in_db = {document_in_db} document_title= {document_title}')
     if document_in_db.exists():
@@ -317,18 +321,22 @@ def _get_signed_docs_by_user(user: object, document_title: str, document_file) -
             for sign in signed:
                 first_name = sign.key_table_id.user.first_name
                 last_name = sign.key_table_id.user.last_name
-                print(document_file.file)
-                print(f'странное условие равно {_is_valid(document_file, document_title, sign)}')
-                if _is_valid(document_file, document_title, sign):
+                signature_validated = _is_valid(document_file, document_title, sign)
+                if signature_validated:
                     print(f'подпись валидна ?_is_valid= {signed}')
                     msg = f'{first_name} {last_name} подписал документ {sign.date_signed}. Документ подлиный'
                     print(msg)
-                    information_about_signed.append(msg)
+                    information_about_signed.append(dict(document_title=document_title,
+                                                         user=f'{first_name} {last_name}',
+                                                         signed_date=sign.date_signed,
+                                                         validated=signature_validated))
                 else:
                     msg = f'{first_name} {last_name} подписал документ {sign.date_signed}. Документ не прошел ' \
                           f'проверку на подлиность'
-                    print(msg)
-                    information_about_signed.append(msg)
+                    information_about_signed.append(dict(document_title=document_title,
+                                                         user=f'{first_name} {last_name}',
+                                                         signed_date=sign.date_signed,
+                                                         validated=signature_validated))
         else:
             print(f'add user to document= {signed}')
             print(f'нет подписей')
