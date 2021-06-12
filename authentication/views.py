@@ -22,7 +22,7 @@ def register_page(request):
             form.save()
             user = form.cleaned_data.get('username')
             generate_user_signature(user)
-            messages.success(request, 'Успешная регистрация' + user)
+            messages.success(request, 'Успешная регистрация' + " "+user)
             return redirect('private-page')
 
     context = {'form': form}

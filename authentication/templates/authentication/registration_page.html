@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="{% static "authentication/css/style_registration.css"%}">
     </head>
     <body>
+    <div class="wrapper">
         <form class="login-form" action='' method="post">
             {% csrf_token %}
             <h1>Регистрация</h1>
@@ -17,10 +18,10 @@
             {{form.password1}}
             {{form.password2}}
             <input type="submit" value="регистрация">
-            <a class="mainpage" href="{% url 'first-page' %}">Вернуться на главную страницу</a>
         </form>
+        <a class="mainPageLink" href="{% url 'first-page' %}">Вернуться на главную страницу</a>
         {{form.errors}}
-
+    </div>
     <script>
 
 		var form_fields = document.getElementsByTagName('input');

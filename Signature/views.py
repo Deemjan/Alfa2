@@ -292,7 +292,8 @@ def test_upload_document_view(request):
         PATH = 'static/file_storage/' + filename
         signed_docs_by_user = _get_signed_docs_by_user(request.user, filename, file_obj_data)
         # set_document_db(filename, file_obj_data, request.user, PATH)
-        return JsonResponse({'success': True, 'message': 'Файл загружен', 'info': signed_docs_by_user})
+        return JsonResponse({'success': True, 'message': f'Документ "{filename}" был успешно загружен и подписан '
+                                                         f'следующими людьми:', 'info': signed_docs_by_user})
     except Exception:
         return JsonResponse({'success': False, 'message': 'Документ не загружен'})
 
@@ -427,9 +428,9 @@ def test_get_users_signed_documents(request):
         docs = test_get_signed_docs_by_user(request)
         if len(docs) == 0:
             return JsonResponse({'success': False})
-        print(f"docs : {docs}")
+        #print(f"docs : {docs}")
         user = User.objects.get(username=request.user)
-        print(f"user: {user}")
+        #print(f"user: {user}")
         return JsonResponse({'success': True,
                              'docs': docs})
     except Exception:
@@ -458,6 +459,24 @@ def test_get_signed_docs_by_user(request, user=None):
         return docs
     except TestVKeyTable.DoesNotExist:
         return TestVKeyTable.objects.none()
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@login_required(login_url='login-page')
+@logger.catch
+def test_get_user_uploaded_documents(request):
+    try:
+        users = User.objects.get(username=request.user)
+        print(users)
+        docs = users.testvddocument_set.all()
+        print(docs)
+        return JsonResponse({
+            'success': True,
+            'docs': list(docs.values())
+        })
+    except Exception:
+        return JsonResponse({'success': False})
 
 #### Нужно сгенирировать ключ +
 ###Подписать документ +

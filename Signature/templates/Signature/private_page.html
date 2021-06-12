@@ -21,7 +21,8 @@
                     <div>
                         <form  class='createSignForm uploaddoc'  name="form" method="post" id="formElem"  enctype="multipart/form-data">
                         {% csrf_token %}
-                            <input type="file" name="file" class="file_upload">
+                            <input type="file" name="file" class="file_upload" id="fileUpload">
+                            <label for="fileUpload">Выберите файл</label>
                             <input type="submit" name='submit' value="Загрузить документ">
                         </form>
                     </div>
@@ -31,13 +32,13 @@
                     <div>
                         <form  class='createSignForm singdoc' method="post" id="formElem_sing_doc">
                         {% csrf_token %}
-                            <select name="documents_name_sing">
+                            <select name="documents_name_sing" class="selectField">
                                     <option value=""  selected disabled>Выберите документ</option>
-                                    {% if user_documents %}
-                                        {% for doc in user_documents %}
-                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>
-                                        {% endfor %}
-                                    {% endif %}
+{#                                    {% if user_documents %}#}
+{#                                        {% for doc in user_documents %}#}
+{#                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>#}
+{#                                        {% endfor %}#}
+{#                                    {% endif %}#}
                             </select>
                             <input  type="submit" name='submit' value="Подписать документ">
                         </form>
@@ -48,13 +49,13 @@
                     <div>
                         <form class='createSignForm verify' method="post" id="formElem_verify_doc">
                             {% csrf_token %}
-                            <select name="documents_name_verify">
+                            <select name="documents_name_verify" class="selectField">
                                     <option value=""  selected disabled>Выберите документ</option>
-                                    {% if user_documents %}
-                                        {% for doc in user_documents %}
-                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>
-                                        {% endfor %}
-                                    {% endif %}
+{#                                    {% if user_documents %}#}
+{#                                        {% for doc in user_documents %}#}
+{#                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>#}
+{#                                        {% endfor %}#}
+{#                                    {% endif %}#}
                             </select>
                             <input style="padding-left: 10px" type="submit" name="submit" value="Проверить подлинность">
                         </form>
@@ -72,14 +73,14 @@
                 {% endif %}
             </div>
         </div>
-<div class="modalTable">
+<div class="modalTable" id="uploadModalTable">
     <div class="modalDialog">
         <div class="modalContent">
             <div class="modalBody">
-                <div class="tableWrapper">
+                <div class="tableWrapper" id="infoTableWrapper">
                     <table class="logTable" id="infoTable">
                         <tr>
-                            <th colspan="3" id="docName" style="background-color: #03061b">Название документа</th>
+                            <th colspan="3" id="uploadSuccess" style="background-color: #03061b;position: inherit"></th>
                         </tr>
                         <tr>
                             <th>Кем подписан</th>
@@ -91,6 +92,26 @@
                         </tr>
                     </table>
                 </div>
+                <a href="#Close" title="Закрыть" class="closeButton">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modalTable" id="signModalTable">
+    <div class="modalDialog">
+        <div class="modalContent">
+            <div class="modalBody">
+                <p class="message" id="signResultMessage"></p>
+                <a href="#Close" title="Закрыть" class="closeButton">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modalTable" id="verifyModalTable">
+    <div class="modalDialog">
+        <div class="modalContent">
+            <div class="modalBody">
+                <p class="message" id="verifyResultMessage"></p>
                 <a href="#Close" title="Закрыть" class="closeButton">Закрыть</a>
             </div>
         </div>
