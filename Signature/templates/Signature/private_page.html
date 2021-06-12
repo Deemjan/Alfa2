@@ -32,14 +32,14 @@
                         <form  class='createSignForm singdoc' method="post" id="formElem_sing_doc">
                         {% csrf_token %}
                             <select name="documents_name_sing">
-                                    <option value=""  selected disabled>Выберите документ для подписи</option>
+                                    <option value=""  selected disabled>Выберите документ</option>
                                     {% if user_documents %}
                                         {% for doc in user_documents %}
                                             <option value="{{doc.id}}">{{ doc.document_title }}</option>
                                         {% endfor %}
                                     {% endif %}
                             </select>
-                            <input type="submit" name='submit' value="Подписать документ">
+                            <input  type="submit" name='submit' value="Подписать документ">
                         </form>
                     </div>
                 </div>
@@ -49,14 +49,14 @@
                         <form class='createSignForm verify' method="post" id="formElem_verify_doc">
                             {% csrf_token %}
                             <select name="documents_name_verify">
-                                    <option value=""  selected disabled>Выберите документ для проверки</option>
+                                    <option value=""  selected disabled>Выберите документ</option>
                                     {% if user_documents %}
                                         {% for doc in user_documents %}
                                             <option value="{{doc.id}}">{{ doc.document_title }}</option>
                                         {% endfor %}
                                     {% endif %}
                             </select>
-                            <input type="submit" name="submit" value="Поддлиность документа">
+                            <input style="padding-left: 10px" type="submit" name="submit" value="Проверить подлинность">
                         </form>
                     </div>
                 </div>

@@ -39,7 +39,7 @@ formElem.onsubmit = async (e) => {
     let result = await response.json();
     console.log(result);
     alert(result.message);
-    console.log(result.info)
+    console.log(result.info);
     let modalTable = document.getElementsByClassName('modalTable')[0];
     modalTable.style.pointerEvents= 'auto';
     modalTable.style.opacity = '1';
@@ -54,13 +54,13 @@ function fillInfoTable(infoArray){
     }
     document.getElementById("docName").innerHTML=`Документ: ${infoArray[0].document_title}`;
     for (let i = 0; i < infoArray.length;i++){
-        let newRow = infoTable.insertRow(infoTable.length)
-        let cell = newRow.insertCell(0)
+        let newRow = infoTable.insertRow(infoTable.length);
+        let cell = newRow.insertCell(0);
         cell.innerHTML = infoArray[i].user;
-        cell = newRow.insertCell(1)
+        cell = newRow.insertCell(1);
         cell.innerHTML = infoArray[i].signed_date;
-        cell = newRow.insertCell(2)
-        cell.innerHTML = infoArray[i].validated;
+        cell = newRow.insertCell(2);
+        cell.innerHTML = infoArray[i].validated ? "Подтвержден" : "Не прошел проверку";
     }
 }
 
@@ -78,7 +78,7 @@ formElem_sing_doc.onsubmit = async (e) => {
     });
     let result = await response.json();
     console.log(result);
-    alert(result.message);
+    //alert(result.message);
 };
 
 
@@ -99,7 +99,7 @@ formElem_verify_doc.onsubmit = async (e) => {
     alert(result.message);
 };
 
-fillUserDocumentsTable()
+fillUserDocumentsTable();
 
 async function  fillUserDocumentsTable(){
     let docTable = document.getElementById("docTable");
