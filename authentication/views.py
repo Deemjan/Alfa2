@@ -3,8 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from Signature.cryptography import generateKey, serializePrivateKey
-from Signature.models import KeyTable, TestVKeyTable
+from Signature.cryptography import generate_key, serialize_private_key
+from Signature.models import TestVKeyTable
 from authentication.forms import CreateUserForm
 
 
@@ -30,17 +30,10 @@ def register_page(request):
 
 
 def generate_user_signature(username):
-    key = generateKey()
-    user = User.objects.get(username=username)
-    key_name = f"Подпись {user.first_name} {user.last_name}"
-    private_key = serializePrivateKey(key)
-    keyTable = KeyTable.objects.create(user=user, key=private_key.decode('ascii'), key_name=key_name)
-    keyTable.save()
-
-    test_key = generateKey()
+    test_key = generate_key()
     test_user = User.objects.get(username=username)
-    test_key_name = f"Подпись {user.first_name} {user.last_name}"
-    test_private_key = serializePrivateKey(key)
+    test_key_name = f"Подпись {test_user.first_name} {test_user.last_name}"
+    test_private_key = serialize_private_key(test_key)
     test_key_table = TestVKeyTable.objects.create(user=test_user, key=test_private_key,
                                                   key_name=test_key_name)
     test_key_table.save()
@@ -69,6 +62,21 @@ def login_page(request):
 def logout_page(request):
     logout(request)
     return redirect('first-page')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Use with rest_framework
 # class MyObtainTokenPairView(TokenObtainPairView):
