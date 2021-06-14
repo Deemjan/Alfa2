@@ -44,23 +44,23 @@
                         </form>
                     </div>
                 </div>
-                <button  class="signature_button">Проверить документ</button>
-                <div class="signature_panel">
-                    <div>
-                        <form class='createSignForm verify' method="post" id="formElem_verify_doc">
-                            {% csrf_token %}
-                            <select name="documents_name_verify" class="selectField">
-                                    <option value=""  selected disabled>Выберите документ</option>
+{#                <button  class="signature_button">Проверить документ</button>#}
+{#                <div class="signature_panel">#}
+{#                    <div>#}
+{#                        <form class='createSignForm verify' method="post" id="formElem_verify_doc">#}
+{#                            {% csrf_token %}#}
+{#                            <select name="documents_name_verify" class="selectField">#}
+{#                                    <option value=""  selected disabled>Выберите документ</option>#}
 {#                                    {% if user_documents %}#}
 {#                                        {% for doc in user_documents %}#}
 {#                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>#}
 {#                                        {% endfor %}#}
 {#                                    {% endif %}#}
-                            </select>
-                            <input style="padding-left: 10px" type="submit" name="submit" value="Проверить подлинность">
-                        </form>
-                    </div>
-                </div>
+{#                            </select>#}
+{#                            <input style="padding-left: 10px" type="submit" name="submit" value="Проверить подлинность">#}
+{#                        </form>#}
+{#                    </div>#}
+{#                </div>#}
             </div>
         </div>
             <div>

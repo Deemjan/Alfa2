@@ -127,26 +127,26 @@ formElem_sing_doc.onsubmit = async (e) => {
 };
 
 
-formElem_verify_doc.onsubmit = async (e) => {
-    e.preventDefault();
-
-    let select = document.querySelector('.verify');
-    const token = select.querySelector('[name=csrfmiddlewaretoken]').value;
-
-    let data = new FormData(formElem_verify_doc);
-    let response = await fetch("testVerifyDoc", {
-      method: 'POST',
-      body: data,
-      credentials: 'same-origin',
-    });
-    let result = await response.json();
-    console.log(result);
-    let modalTable = document.getElementById('verifyModalTable');
-    modalTable.style.pointerEvents= 'auto';
-    modalTable.style.opacity = '1';
-    let messageBox = document.getElementById("verifyResultMessage");
-    messageBox.innerText=result.message;
-};
+// formElem_verify_doc.onsubmit = async (e) => {
+//     e.preventDefault();
+//
+//     let select = document.querySelector('.verify');
+//     const token = select.querySelector('[name=csrfmiddlewaretoken]').value;
+//
+//     let data = new FormData(formElem_verify_doc);
+//     let response = await fetch("testVerifyDoc", {
+//       method: 'POST',
+//       body: data,
+//       credentials: 'same-origin',
+//     });
+//     let result = await response.json();
+//     console.log(result);
+//     let modalTable = document.getElementById('verifyModalTable');
+//     modalTable.style.pointerEvents= 'auto';
+//     modalTable.style.opacity = '1';
+//     let messageBox = document.getElementById("verifyResultMessage");
+//     messageBox.innerText=result.message;
+// };
 
 fillUserDocumentsTable();
 
