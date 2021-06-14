@@ -66,7 +66,7 @@ formElem.onsubmit = async (e) => {
     let result = await response.json();
     console.log(result);
     //alert(result.message);
-    console.log(result.info);
+    console.log(result.info['message']);
     let modalTable = document.getElementById('uploadModalTable');
     modalTable.style.pointerEvents= 'auto';
     modalTable.style.opacity = '1';

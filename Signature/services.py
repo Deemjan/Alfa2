@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from loguru import logger
 
 from Signature.cryptography import _add_signed_doc
-from Signature.models import TestVdDocument, TestVKeyTable
+from Signature.models import TestVdDocument, TestVKeyTable, TestVSignedForDocument
 
 logger.add("debug_signature_services.json", format="{time} {level} {message}",
            level="DEBUG", rotation="1 week", compression="zip", serialize=True)
@@ -20,8 +20,11 @@ def sing_document(file_id: int, user: object):
     """Находим необходимые document и key, после добавляем подпись документу"""
     document = TestVdDocument.objects.get(pk=file_id)
     user = User.objects.get(username=user)
-    print(f'sing_document {user}  {user.pk} {user.username} ')
     key = TestVKeyTable.objects.get(user=user)
-    print(key)
-
-    _add_signed_doc(file=document, key_obj=key)
+    try:
+        signed = TestVSignedForDocument.objects.get(signed=document)
+        if user == signed.key_table_id.user:
+            return "Вы уже подписали этот документ"
+    except TestVSignedForDocument.DoesNotExist:
+        _add_signed_doc(file=document, key_obj=key)
+        return "Документ успешно подписан"
