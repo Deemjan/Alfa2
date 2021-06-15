@@ -7,6 +7,7 @@
 
     {% block link %}
         <link rel="stylesheet" href="{% static "Signature/css/style_private.css" %}">
+
     {% endblock %}
 
 {% block content %}
@@ -15,51 +16,51 @@
         <div class="content_signature">
             <p>Управление подписями и документами</p>
             <div>
-{#                <button class="signature_button" >Создать подпиcь</button>#}
-{#                <div class="signature_panel">#}
-{#                    <div>#}
-{#                        <form  class='createSignForm' method="post" action="/generateKey" enctype="application/json">#}
-{#                        {% csrf_token %}#}
-{#                            <label for="sing">Название подписи</label>#}
-{#                            <input type="text" id="sing"  name="Название подписи" placeholder="Введите название">#}
-{#                            <label for="date_sing">Срок действия подписи</label>#}
-{#                            <input type="date" name="Дата" id="date_sing">#}
-{#                            <input type="submit" name='submit' value="Создать подпись">#}
-{#                         </form>#}
-{#                    </div>#}
-{#                </div>#}
+                <button  class="signature_button">Загрузить документ</button>
+                <div class="signature_panel">
+                    <div>
+                        <form  class='createSignForm uploaddoc'  name="form" method="post" id="formElem"  enctype="multipart/form-data">
+                        {% csrf_token %}
+                            <input type="file" name="file" class="file_upload" id="fileUpload">
+                            <label for="fileUpload">Выберите файл</label>
+                            <input type="submit" name='submit' value="Загрузить документ">
+                        </form>
+                    </div>
+                </div>
                 <button  class="signature_button">Подписать документ</button>
                 <div class="signature_panel">
                     <div>
-                        <form  class='createSignForm' method="post" action="/signDocHandler" enctype="multipart/form-data">
+                        <form  class='createSignForm singdoc' method="post" id="formElem_sing_doc">
                         {% csrf_token %}
-                            <select name="keys">
-                                    <option value=""  selected disabled>Выберите ключ для подписи</option>
-                                    {% if user_keys %}
-                                    {% for key in user_keys %}
-                                        <option value="{{key.key_id}}">{{ key.key_name }}</option>
-                                    {% endfor %}
-                                {% endif %}
+                            <select name="documents_name_sing" class="selectField">
+                                    <option value=""  selected disabled>Выберите документ</option>
+{#                                    {% if user_documents %}#}
+{#                                        {% for doc in user_documents %}#}
+{#                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>#}
+{#                                        {% endfor %}#}
+{#                                    {% endif %}#}
                             </select>
-                            <label for="upload" class="file_upload">Выберите файл</label>
-                            <input id="upload" name='file' type="file"/>
-{#                            <input type="file" name="file" class="file_upload">#}
-                                <input type="submit" name='submit' value="Подписать документ">
-
+                            <input  type="submit" name='submit' value="Подписать документ">
                         </form>
                     </div>
                 </div>
-                <button  class="signature_button">Проверить документ</button>
-                <div class="signature_panel">
-                    <div>
-                        <form class='createSignForm' method="post" action="/uploadHandler" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <input id="verify_upload" name='file' type="file"/>
-                            <label for="verify_upload" class="file_upload">Выберите файл</label>
-                            <input style="padding-left:71px" type="submit" id="check">
-                        </form>
-                    </div>
-                </div>
+{#                <button  class="signature_button">Проверить документ</button>#}
+{#                <div class="signature_panel">#}
+{#                    <div>#}
+{#                        <form class='createSignForm verify' method="post" id="formElem_verify_doc">#}
+{#                            {% csrf_token %}#}
+{#                            <select name="documents_name_verify" class="selectField">#}
+{#                                    <option value=""  selected disabled>Выберите документ</option>#}
+{#                                    {% if user_documents %}#}
+{#                                        {% for doc in user_documents %}#}
+{#                                            <option value="{{doc.id}}">{{ doc.document_title }}</option>#}
+{#                                        {% endfor %}#}
+{#                                    {% endif %}#}
+{#                            </select>#}
+{#                            <input style="padding-left: 10px" type="submit" name="submit" value="Проверить подлинность">#}
+{#                        </form>#}
+{#                    </div>#}
+{#                </div>#}
             </div>
         </div>
             <div>
@@ -72,21 +73,61 @@
                 {% endif %}
             </div>
         </div>
+<div class="modalTable" id="uploadModalTable">
+    <div class="modalDialog">
+        <div class="modalContent">
+            <div class="modalBody">
+                <div class="tableWrapper" id="infoTableWrapper">
+                    <table class="logTable" id="infoTable">
+                        <tr>
+                            <th colspan="3" id="uploadSuccess" style="background-color: #03061b;position: inherit"></th>
+                        </tr>
+                        <tr>
+                            <th>Кем подписан</th>
+                            <th>Когда подписан</th>
+                            <th>Верифицирован</th>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="background-color: #0B1F35; color:white; text-align: center" id="noDocsMessage">Нет документов</td>
+                        </tr>
+                    </table>
+                </div>
+                <a href="#Close" title="Закрыть" class="closeButton">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modalTable" id="signModalTable">
+    <div class="modalDialog">
+        <div class="modalContent">
+            <div class="modalBody">
+                <p class="message" id="signResultMessage"></p>
+                <a href="#Close" title="Закрыть" class="closeButton">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modalTable" id="verifyModalTable">
+    <div class="modalDialog">
+        <div class="modalContent">
+            <div class="modalBody">
+                <p class="message" id="verifyResultMessage"></p>
+                <a href="#Close" title="Закрыть" class="closeButton">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
         <div class="tableWrapper">
-            <table class="logTable">
+            <table class="logTable" id="docTable">
                 <tr>
                     <th>Название</th>
                     <th>Кем подписан</th>
                     <th>Когда подписан</th>
                 </tr>
-            {% for doc in docs %}
-                <tr>
-                    <td> {{doc.document_title}}</td>
-                    <td>{{doc.key_table_id.user.first_name}} {{doc.key_table_id.user.last_name}}</td>
-                    <td>{{doc.date_for_logs|date:"d-m-Y H:i"}}</td>
-                </tr>
-            {% endfor %}
             </table>
         </div>
     </div>
+    <script>
+
+    </script>
 {% endblock %}

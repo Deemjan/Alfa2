@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
 from Signature.cryptography import generateKey, serializePrivateKey
-from Signature.models import KeyTable
+from Signature.models import KeyTable, TestVKeyTable
 from authentication.forms import CreateUserForm
 
 
@@ -22,7 +22,7 @@ def register_page(request):
             form.save()
             user = form.cleaned_data.get('username')
             generate_user_signature(user)
-            messages.success(request, 'Успешная регистрация' + user)
+            messages.success(request, 'Успешная регистрация' + " "+user)
             return redirect('private-page')
 
     context = {'form': form}
@@ -36,6 +36,14 @@ def generate_user_signature(username):
     private_key = serializePrivateKey(key)
     keyTable = KeyTable.objects.create(user=user, key=private_key.decode('ascii'), key_name=key_name)
     keyTable.save()
+
+    test_key = generateKey()
+    test_user = User.objects.get(username=username)
+    test_key_name = f"Подпись {user.first_name} {user.last_name}"
+    test_private_key = serializePrivateKey(key)
+    test_key_table = TestVKeyTable.objects.create(user=test_user, key=test_private_key,
+                                                  key_name=test_key_name)
+    test_key_table.save()
 
 
 def login_page(request):
