@@ -128,7 +128,7 @@ def _get_signed_docs_by_user(user: object, document_title: str, document_file) -
         else:
             print(f'add user to document= {signed}')
             print(f'нет подписей')
-            _add_user_to_document_db(filename=document_title, file_obj_data=document_file, user=user)
+        _add_user_to_document_db(filename=document_title, file_obj_data=document_file, user=user)
     else:
         set_document_db(filename=document_title, file_obj_data=document_file, user=user)
     return information_about_signed

@@ -25,6 +25,8 @@ def sing_document(file_id: int, user: object):
         signed = TestVSignedForDocument.objects.get(signed=document)
         if user == signed.key_table_id.user:
             return "Вы уже подписали этот документ"
+        _add_signed_doc(file=document, key_obj=key)
+        return "Документ успешно подписан"
     except TestVSignedForDocument.DoesNotExist:
         _add_signed_doc(file=document, key_obj=key)
         return "Документ успешно подписан"
